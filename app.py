@@ -21,87 +21,88 @@ st.set_page_config(
     layout="centered"
 )
 
-# 90s Movies (1995-2000) - The Golden Era with TMDB poster URLs
+# 90s Movies (1995-2000) - The Golden Era with working poster URLs
+# Using m.media-amazon.com (Amazon/IMDB hosted) which are more reliable
 MOVIES_90S = [
     {
         "title": "The Matrix (1999)",
-        "poster": "https://image.tmdb.org/t/p/w200/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Fight Club (1999)",
-        "poster": "https://image.tmdb.org/t/p/w200/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BOTgyOGQ1NDItNGU3Ny00MjU3LTg2YWEtNmEyYjBiMjI1Y2M5XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Pulp Fiction (1994)",
-        "poster": "https://image.tmdb.org/t/p/w200/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BYTViYTE3ZGQtNDBlMC00ZTAyLTkyODMtZGRiZDg0MjA2YThkXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "The Shawshank Redemption (1994)",
-        "poster": "https://image.tmdb.org/t/p/w200/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BMDAyY2FhYjctNDc5OS00MDNlLThiMGUtY2UxYWVkNGY2ZjljXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Forrest Gump (1994)",
-        "poster": "https://image.tmdb.org/t/p/w200/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BNDYwNzVjMTItZmU5YS00YjQ5LTljYjgtMjY2NDVmYWMyNWFmXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Titanic (1997)",
-        "poster": "https://image.tmdb.org/t/p/w200/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BYzYyN2FiZmUtYWYzMy00MzViLWJkZTMtOGY1ZjgzNWMzZTEwXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Good Will Hunting (1997)",
-        "poster": "https://image.tmdb.org/t/p/w200/bABCBKYBK7A5G1x0FzoeoNfuj2b.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BOTI0MzcxMTYtZDVkMy00NjY1LTgyMTYtZmUxN2M3NmQ2NWJhXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "The Big Lebowski (1998)",
-        "poster": "https://image.tmdb.org/t/p/w200/o6j3nbR1wUfM7XPZP1DWMQS7RX8.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BZTFjMjBiYzItNzU5YS00MjdiLWJkOTktNDQ3MTE3ZjY2YTY5XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Se7en (1995)",
-        "poster": "https://image.tmdb.org/t/p/w200/6yoghtyTpznpBik8uj3IhMF19yr.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BY2IzNzMxZjctZjUxZi00YzAxLTk3ZjMtODFjODdhMDU5NDM1XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Fargo (1996)",
-        "poster": "https://image.tmdb.org/t/p/w200/rt7cpEr1uP6RTZykBFhBTtYRLDi.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BOTJlZWMxYzEtMjlkMS00ODE0LThlM2ItOWM2NzMzMDVkYjU5XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Heat (1995)",
-        "poster": "https://image.tmdb.org/t/p/w200/rrBuGu0dEccYL3GgJD8t1SYvMud.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BNGM1YjA1YWQtMTY2OC00YzYzLWJiYWEtYzNhNjNhY2EzNGZmXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "The Usual Suspects (1995)",
-        "poster": "https://image.tmdb.org/t/p/w200/bUPmtQzrRhzqYySeiMpv7GurAfm.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BOTE5MDUxZDUtZDg4ZS00OWI4LThlZTktYjEyZjA4Y2RhYzUyXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Trainspotting (1996)",
-        "poster": "https://image.tmdb.org/t/p/w200/bhY62Dw8iW54DIhxPQerbuB9DOP.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BMzA5Y2IwYWMtNmY2Mi00ZmQ5LWFhOTYtYTM0MDBmMDgxZTM4XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "L.A. Confidential (1997)",
-        "poster": "https://image.tmdb.org/t/p/w200/zhx7oMsa9u4ioKtNOByDwLSB5lz.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BMDQ2YzEyZGItYWRhOS00MjBmLTkzMDUtMTdjYzkyMmQxZTJlXkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Saving Private Ryan (1998)",
-        "poster": "https://image.tmdb.org/t/p/w200/uqx37cS8cpHg8U35f9U5IuAc09c.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BZjhkMDM4MWItZTVjOC00ZDRhLThmYTAtM2I5NzBmNmNlMzI1XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "The Truman Show (1998)",
-        "poster": "https://image.tmdb.org/t/p/w200/vuza0WtBNXXa1dC7bQjCeTOMdHg.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BNjMwODMwNjc5N15BMl5BanBnXkFtZTcwMTA3NTUzMw@@._V1_SX300.jpg"
     },
     {
         "title": "American Beauty (1999)",
-        "poster": "https://image.tmdb.org/t/p/w200/wby9315QzVKdW9BonAefg8jGTTb.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BM2JhNzlhNjctN2Y1MC00YmZlLTkyMGYtZjRjNzNlNWYwYWQ2XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "Office Space (1999)",
-        "poster": "https://image.tmdb.org/t/p/w200/4dLsLYXerWmMDsU5qmp5RbBjpk7.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BOTA5MzQ3MzI1NV5BMl5BanBnXkFtZTgwNTcxNTYxMTE@._V1_SX300.jpg"
     },
     {
         "title": "The Fifth Element (1997)",
-        "poster": "https://image.tmdb.org/t/p/w200/fPtlCO1yQtnoLHOwKtWz7db6RGU.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BZWFjYmZmZGQtYzg4YS00ZGE5LTgwYzAtZTRjNWIzNGYzNjA1XkEyXkFqcGc@._V1_SX300.jpg"
     },
     {
         "title": "12 Monkeys (1995)",
-        "poster": "https://image.tmdb.org/t/p/w200/6Sj9wDu3YugthXsU0Vry5XFAZGg.jpg"
+        "poster": "https://m.media-amazon.com/images/M/MV5BOTI0MjE4MzMwM15BMl5BanBnXkFtZTcwNTIyOTQyMw@@._V1_SX300.jpg"
     }
 ]
 
