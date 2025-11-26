@@ -21,6 +21,30 @@ st.set_page_config(
     layout="centered"
 )
 
+# 90s Movies (1995-2000) - The Golden Era
+MOVIES_90S = [
+    "The Matrix (1999)",
+    "Fight Club (1999)",
+    "Pulp Fiction (1994)",
+    "The Shawshank Redemption (1994)",
+    "Forrest Gump (1994)",
+    "Titanic (1997)",
+    "Good Will Hunting (1997)",
+    "The Big Lebowski (1998)",
+    "Se7en (1995)",
+    "Fargo (1996)",
+    "Heat (1995)",
+    "The Usual Suspects (1995)",
+    "Trainspotting (1996)",
+    "L.A. Confidential (1997)",
+    "Saving Private Ryan (1998)",
+    "The Truman Show (1998)",
+    "American Beauty (1999)",
+    "Office Space (1999)",
+    "The Fifth Element (1997)",
+    "12 Monkeys (1995)"
+]
+
 # Initialize session state
 if 'stage' not in st.session_state:
     st.session_state.stage = 'welcome'
@@ -32,6 +56,10 @@ if 'start_time' not in st.session_state:
     st.session_state.start_time = datetime.datetime.now()
 if 'scenarios_randomized' not in st.session_state:
     st.session_state.scenarios_randomized = False
+if 'username' not in st.session_state:
+    st.session_state.username = None
+if 'favorite_movie' not in st.session_state:
+    st.session_state.favorite_movie = None
 
 # Test scenarios - REAL EXP2 DATA (T3 vs CONTROL pairs)
 scenarios = [
@@ -137,8 +165,45 @@ def show_welcome():
     """)
 
     if st.button("Begin Test", type="primary"):
-        st.session_state.stage = 'calibration'
+        st.session_state.stage = 'intro'
         st.rerun()
+
+def show_intro():
+    """Capture username and favorite movie - make it fun!"""
+    st.title("🎬 Quick Intro")
+    st.header("Before we test AI fidelity, let's test YOUR taste in 90s cinema!")
+
+    st.info("This helps us identify your responses and... we're just curious about your movie taste.")
+
+    # Username input
+    st.subheader("What should we call you?")
+    username = st.text_input(
+        "Username/Nickname",
+        placeholder="e.g., MovieBuff42, Sarah, TheDude",
+        label_visibility="collapsed"
+    )
+
+    # Movie selection
+    st.subheader("Pick your favorite 90s movie:")
+    st.write("*(This is the real test)*")
+
+    movie = st.selectbox(
+        "Favorite 90s Movie",
+        options=["-- Select a movie --"] + MOVIES_90S,
+        label_visibility="collapsed"
+    )
+
+    # Validation and continue
+    if username and movie != "-- Select a movie --":
+        st.success(f"Nice choice, **{username}**! *{movie}* is a classic.")
+
+        if st.button("Let's Do This →", type="primary"):
+            st.session_state.username = username
+            st.session_state.favorite_movie = movie
+            st.session_state.stage = 'calibration'
+            st.rerun()
+    else:
+        st.warning("Please enter a username and pick a movie to continue.")
 
 def show_calibration():
     """Calibration screen with Gold Standard"""
@@ -361,25 +426,35 @@ def show_results():
     end_time = datetime.datetime.now()
     duration = (end_time - st.session_state.start_time).total_seconds() / 60
 
+    # Get username for filename and display
+    username = st.session_state.username or "anonymous"
+    movie = st.session_state.favorite_movie or "not_selected"
+
     results = {
-        "test_version": "1.0",
+        "test_version": "1.1",
+        "rater": {
+            "username": username,
+            "favorite_movie": movie
+        },
         "completed_at": end_time.isoformat(),
         "duration_minutes": round(duration, 2),
         "responses": st.session_state.responses,
         "summary": calculate_summary(st.session_state.responses)
     }
 
-    st.success("**Thank you for completing the evaluation!**")
+    st.success(f"**Thanks, {username}!** Your evaluation is complete.")
 
     st.info(f"""
     **Your Results Summary:**
+    - **Rater:** {username}
+    - **Movie Taste:** {movie}
     - **Duration:** {duration:.1f} minutes
     - **Responses:** {len(st.session_state.responses)} scenarios completed
     - **Human PFI:** {results['summary']['pfi_human']:.3f}
     """)
 
     st.subheader("Your Results (JSON)")
-    st.write("Please copy this data or download the file and send it to the researcher:")
+    st.write("Please download the file and send it to Ziggy:")
 
     results_json = json.dumps(results, indent=2)
     st.code(results_json, language="json")
@@ -387,11 +462,14 @@ def show_results():
     # Download buttons
     col1, col2 = st.columns(2)
 
+    # Clean username for filename
+    safe_username = "".join(c for c in username if c.isalnum() or c in "-_").lower()
+
     with col1:
         st.download_button(
             label="📥 Download Results as JSON",
             data=results_json,
-            file_name=f"fidelity_test_results_{int(end_time.timestamp())}.json",
+            file_name=f"vudu_{safe_username}_{int(end_time.timestamp())}.json",
             mime="application/json",
             type="primary"
         )
@@ -407,6 +485,8 @@ def show_results():
 def main():
     if st.session_state.stage == 'welcome':
         show_welcome()
+    elif st.session_state.stage == 'intro':
+        show_intro()
     elif st.session_state.stage == 'calibration':
         show_calibration()
     elif st.session_state.stage == 'scenarios':
