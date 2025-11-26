@@ -282,7 +282,7 @@ def scroll_to_top():
     st.components.v1.html(js, height=0)
 
 def show_scenario():
-    """Show current scenario and rating questions"""
+    """Show current scenario and rating questions - SIMPLIFIED UX"""
     idx = st.session_state.current_scenario
     scenario = scenarios[idx]
 
@@ -294,8 +294,12 @@ def show_scenario():
     st.progress(progress)
     st.write(f"**Progress:** Scenario {idx + 1} of {len(scenarios)}")
 
+    # Collapsible Gold Standard reference
+    with st.expander("📌 **Show Gold Standard** (click to remind yourself what Ziggy sounds like)"):
+        st.markdown(f"*{GOLD_STANDARD}*")
+        st.caption("Look for: structural metaphors, 'zoom out' thinking, epistemic humility, playful-but-serious tone")
+
     st.title(f"Scenario {idx + 1} of {len(scenarios)}")
-    st.write(f"**Domain:** {scenario['domain']}")
 
     # Show prompt
     st.info(f"**Prompt:**\n\n\"{scenario['prompt']}\"")
@@ -305,89 +309,71 @@ def show_scenario():
     first_response = scenario['responseA'] if random_order else scenario['responseB']
     second_response = scenario['responseB'] if random_order else scenario['responseA']
 
-    # Show responses
+    # Show responses side by side or stacked
     st.subheader("Response A")
-    bg_color_a = "#f0f0f0" if first_response['type'] == 'CONTROL' else "#e8f4f8"
     st.markdown(f"""
-    <div style="background-color: {bg_color_a}; padding: 20px; border-left: 4px solid #3498db; margin: 15px 0;">
+    <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #3498db; margin: 15px 0; border-radius: 4px;">
     {first_response['text']}
     </div>
     """, unsafe_allow_html=True)
 
     st.subheader("Response B")
-    bg_color_b = "#f0f0f0" if second_response['type'] == 'CONTROL' else "#e8f4f8"
     st.markdown(f"""
-    <div style="background-color: {bg_color_b}; padding: 20px; border-left: 4px solid #3498db; margin: 15px 0;">
+    <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #e74c3c; margin: 15px 0; border-radius: 4px;">
     {second_response['text']}
     </div>
     """, unsafe_allow_html=True)
 
-    # Rating questions
+    # SIMPLIFIED Rating questions
     st.divider()
+    st.subheader("🎯 Your Rating")
 
-    st.subheader("1. Voice Test (Aliasing Detection)")
-    st.write("Which response sounds like the person who wrote the Gold Standard?")
+    # Question 1: Voice Test (the main question)
+    st.markdown("**1. Which response sounds more like the Gold Standard?**")
     voice = st.radio(
         "Voice Test",
         options=[
             "Definitely Response A",
             "Leaning Response A",
-            "Hard to tell / Both",
+            "Hard to tell",
             "Leaning Response B",
             "Definitely Response B"
         ],
         key=f"voice_{idx}",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        horizontal=True
     )
 
-    st.subheader("2. Vibe Check (High-Frequency Detail)")
-    st.write("Does the preferred response capture the 'Cosmic/Structural' energy?")
-    vibe = st.radio(
-        "Vibe Check",
-        options=[
-            "(1) No, it feels robotic/generic",
-            "(2) A little bit",
-            "(3) Yes, perfectly"
-        ],
-        key=f"vibe_{idx}",
-        label_visibility="collapsed"
-    )
+    # Question 2: Confidence (only if they made a choice)
+    picked_hard_to_tell = voice == "Hard to tell"
 
-    st.subheader("3. Logic Test (Signal Integrity)")
-    st.write("Does the preferred response use 'Systems/Structural' framing?")
-    logic = st.radio(
-        "Logic Test",
-        options=[
-            "(1) No, standard advice",
-            "(2) Somewhat",
-            "(3) Yes, distinct structural framing"
-        ],
-        key=f"logic_{idx}",
-        label_visibility="collapsed"
-    )
+    if picked_hard_to_tell:
+        st.info("👆 No worries! Some pairs are tricky. Just move on to the next one.")
+        confidence = "N/A - Hard to tell"
+    else:
+        st.markdown("**2. How confident are you in your choice?**")
+        confidence = st.radio(
+            "Confidence",
+            options=[
+                "Not confident (mostly guessing)",
+                "Somewhat confident (noticed some differences)",
+                "Very confident (clear difference)"
+            ],
+            key=f"confidence_{idx}",
+            label_visibility="collapsed"
+        )
 
-    st.subheader("4. Overall Continuity (Optional)")
-    st.write("Would you trust this AI to be the same collaborator as the Gold Standard?")
-    continuity = st.radio(
-        "Continuity",
-        options=[
-            "Yes (Continuity is intact)",
-            "Sort of (Different version/mood)",
-            "No (Feels like a stranger)",
-            "Skip this question"
-        ],
-        key=f"continuity_{idx}",
-        label_visibility="collapsed"
-    )
-
-    st.subheader("Comments (Optional)")
+    # Question 3: Optional comments
+    st.markdown("**3. What made you pick that one? (optional)**")
     comments = st.text_area(
-        "Any quick note on why you scored this way?",
+        "Quick note",
         key=f"comments_{idx}",
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        placeholder="e.g., 'A used more metaphors' or 'B felt more natural' or 'both seemed similar'"
     )
 
     # Navigation buttons
+    st.divider()
     col1, col2 = st.columns(2)
 
     with col1:
@@ -397,33 +383,33 @@ def show_scenario():
                 st.rerun()
 
     with col2:
-        if voice and vibe and logic:
-            button_label = "Finish" if idx == len(scenarios) - 1 else "Next →"
+        # Only need voice selection to proceed (confidence auto-handled)
+        can_proceed = voice is not None
+        if can_proceed:
+            button_label = "Finish 🎉" if idx == len(scenarios) - 1 else "Next →"
             if st.button(button_label, type="primary"):
                 # Save response
                 voice_score_map = {
                     "Definitely Response A": 2,
                     "Leaning Response A": 1,
-                    "Hard to tell / Both": 0,
+                    "Hard to tell": 0,
                     "Leaning Response B": -1,
                     "Definitely Response B": -2
                 }
-                vibe_score = int(vibe[1])
-                logic_score = int(logic[1])
-                continuity_score_map = {
-                    "Yes (Continuity is intact)": 3,
-                    "Sort of (Different version/mood)": 2,
-                    "No (Feels like a stranger)": 1,
-                    "Skip this question": None
+                confidence_score_map = {
+                    "Not confident (mostly guessing)": 1,
+                    "Somewhat confident (noticed some differences)": 2,
+                    "Very confident (clear difference)": 3,
+                    "N/A - Hard to tell": 0
                 }
 
                 response = {
                     "scenario_id": scenario['id'],
                     "domain": scenario['domain'],
+                    "voice_choice": voice,
                     "voice_score": voice_score_map[voice],
-                    "vibe_score": vibe_score,
-                    "logic_score": logic_score,
-                    "continuity_score": continuity_score_map[continuity],
+                    "confidence": confidence,
+                    "confidence_score": confidence_score_map[confidence],
                     "comments": comments,
                     "random_order": random_order
                 }
@@ -440,31 +426,44 @@ def show_scenario():
                     st.session_state.stage = 'results'
                     st.rerun()
         else:
-            st.warning("⚠️ Please answer all required questions (Voice, Vibe, Logic) before proceeding.")
+            st.warning("⚠️ Please select which response sounds more like the Gold Standard.")
 
 def calculate_summary(responses):
-    """Calculate summary statistics"""
+    """Calculate summary statistics - SIMPLIFIED VERSION"""
     voice_scores = [r['voice_score'] for r in responses]
-    vibe_scores = [r['vibe_score'] for r in responses]
-    logic_scores = [r['logic_score'] for r in responses]
+    confidence_scores = [r['confidence_score'] for r in responses]
 
-    # Normalize and calculate PFI
+    # Count choices
+    chose_a = sum(1 for r in responses if r['voice_score'] > 0)
+    chose_b = sum(1 for r in responses if r['voice_score'] < 0)
+    hard_to_tell = sum(1 for r in responses if r['voice_score'] == 0)
+
+    # Normalize voice scores to 0-1 range (where 1 = correctly identified T3)
+    # voice_score: 2=Def A, 1=Lean A, 0=Hard, -1=Lean B, -2=Def B
     voice_norm = [(v + 2) / 4 for v in voice_scores]
-    vibe_norm = [(v - 1) / 2 for v in vibe_scores]
-    logic_norm = [(v - 1) / 2 for v in logic_scores]
 
-    combined = [(voice_norm[i] + vibe_norm[i] + logic_norm[i]) / 3 for i in range(len(responses))]
+    # Confidence weighted score (higher confidence = more weight)
+    # confidence_score: 0=N/A, 1=Not confident, 2=Somewhat, 3=Very confident
+    confidence_weights = [max(c, 1) / 3 for c in confidence_scores]  # normalize to 0.33-1.0
+
+    # PFI = average of voice scores, weighted by confidence
+    weighted_scores = [voice_norm[i] * confidence_weights[i] for i in range(len(responses))]
+    pfi = sum(weighted_scores) / sum(confidence_weights) if sum(confidence_weights) > 0 else 0.5
 
     return {
-        "mean_voice": sum(voice_scores) / len(voice_scores),
-        "mean_vibe": sum(vibe_scores) / len(vibe_scores),
-        "mean_logic": sum(logic_scores) / len(logic_scores),
-        "pfi_human": sum(combined) / len(combined)
+        "total_scenarios": len(responses),
+        "chose_a_count": chose_a,
+        "chose_b_count": chose_b,
+        "hard_to_tell_count": hard_to_tell,
+        "mean_voice": sum(voice_scores) / len(voice_scores) if voice_scores else 0,
+        "mean_confidence": sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0,
+        "pfi_human": pfi
     }
 
 def show_results():
     """Show results and download options"""
     st.title("✅ Test Complete!")
+    st.balloons()
 
     end_time = datetime.datetime.now()
     duration = (end_time - st.session_state.start_time).total_seconds() / 60
@@ -473,8 +472,10 @@ def show_results():
     username = st.session_state.username or "anonymous"
     movie = st.session_state.favorite_movie or "not_selected"
 
+    summary = calculate_summary(st.session_state.responses)
+
     results = {
-        "test_version": "1.1",
+        "test_version": "2.0",  # Updated version for simplified UX
         "rater": {
             "username": username,
             "favorite_movie": movie
@@ -482,18 +483,28 @@ def show_results():
         "completed_at": end_time.isoformat(),
         "duration_minutes": round(duration, 2),
         "responses": st.session_state.responses,
-        "summary": calculate_summary(st.session_state.responses)
+        "summary": summary
     }
 
-    st.success(f"**Thanks, {username}!** Your evaluation is complete.")
+    st.success(f"**Thanks, {username}!** You're awesome. 🎬")
+
+    # Show friendly summary
+    st.subheader("📊 Your Results")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Time", f"{duration:.1f} min")
+    with col2:
+        st.metric("Scenarios", f"{summary['total_scenarios']}")
+    with col3:
+        st.metric("PFI Score", f"{summary['pfi_human']:.2f}")
 
     st.info(f"""
-    **Your Results Summary:**
-    - **Rater:** {username}
-    - **Movie Taste:** {movie}
-    - **Duration:** {duration:.1f} minutes
-    - **Responses:** {len(st.session_state.responses)} scenarios completed
-    - **Human PFI:** {results['summary']['pfi_human']:.3f}
+    **Breakdown:**
+    - Chose Response A: {summary['chose_a_count']} times
+    - Chose Response B: {summary['chose_b_count']} times
+    - Hard to tell: {summary['hard_to_tell_count']} times
+    - Avg confidence: {summary['mean_confidence']:.1f}/3
     """)
 
     st.subheader("Your Results (JSON)")
