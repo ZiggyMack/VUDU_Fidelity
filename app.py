@@ -260,6 +260,13 @@ def show_calibration():
     st.warning("**GOLD STANDARD SAMPLE (ZIGGY):**")
     st.markdown(f"*{GOLD_STANDARD}*")
 
+    st.caption("""
+    **Note:** This example uses a debugging/biology metaphor, but Ziggy applies the same
+    *thinking pattern* across ALL domains - tech, philosophy, self-reflection, etc.
+    Look for the underlying signature: zooming out, structural framing, epistemic humility -
+    not the specific words or topic.
+    """)
+
     st.error("⚠️ **Do not proceed until you have a 'feel' for this voice.**")
 
     if st.button("I understand the Gold Standard — Continue", type="primary"):
@@ -268,10 +275,19 @@ def show_calibration():
         st.rerun()
 
 def scroll_to_top():
-    """Inject JavaScript to scroll to top of page"""
+    """Inject JavaScript to scroll to top of page - works on both desktop and mobile"""
     js = '''
     <script>
-        window.parent.document.querySelector('section.main').scrollTo(0, 0);
+        // Try multiple scroll methods for compatibility
+        var main = window.parent.document.querySelector('section.main');
+        if (main) main.scrollTo({top: 0, behavior: 'instant'});
+
+        // Also try scrolling the main container
+        var container = window.parent.document.querySelector('[data-testid="stAppViewContainer"]');
+        if (container) container.scrollTo({top: 0, behavior: 'instant'});
+
+        // Fallback to window scroll
+        window.parent.scrollTo({top: 0, behavior: 'instant'});
     </script>
     '''
     st.components.v1.html(js, height=0)
@@ -300,6 +316,11 @@ This is exactly what "Ziggy" is supposed to sound like.
 - "Cosmic Architect" meets "Practical Engineer"
 """)
         st.markdown(f"*{GOLD_STANDARD}*")
+        st.caption("""
+**Note:** This example uses a debugging/biology metaphor, but Ziggy applies the same
+*thinking pattern* across ALL domains. Look for the underlying signature: zooming out,
+structural framing, epistemic humility - not the specific words or topic.
+""")
 
     st.title(f"Scenario {idx + 1} of {len(scenarios)}")
 
@@ -312,17 +333,18 @@ This is exactly what "Ziggy" is supposed to sound like.
     second_response = scenario['responseB'] if random_order else scenario['responseA']
 
     # Show responses side by side or stacked
+    # Using explicit dark text color for mobile compatibility (light/dark mode safe)
     st.subheader("Response A")
     st.markdown(f"""
-    <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #3498db; margin: 15px 0; border-radius: 4px;">
-    {first_response['text']}
+    <div style="background-color: #f0f2f6; padding: 20px; border-left: 4px solid #3498db; margin: 15px 0; border-radius: 4px; color: #1f1f1f !important;">
+    <span style="color: #1f1f1f;">{first_response['text']}</span>
     </div>
     """, unsafe_allow_html=True)
 
     st.subheader("Response B")
     st.markdown(f"""
-    <div style="background-color: #f8f9fa; padding: 20px; border-left: 4px solid #e74c3c; margin: 15px 0; border-radius: 4px;">
-    {second_response['text']}
+    <div style="background-color: #f0f2f6; padding: 20px; border-left: 4px solid #e74c3c; margin: 15px 0; border-radius: 4px; color: #1f1f1f !important;">
+    <span style="color: #1f1f1f;">{second_response['text']}</span>
     </div>
     """, unsafe_allow_html=True)
 
