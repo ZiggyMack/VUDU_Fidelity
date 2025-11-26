@@ -21,28 +21,88 @@ st.set_page_config(
     layout="centered"
 )
 
-# 90s Movies (1995-2000) - The Golden Era
+# 90s Movies (1995-2000) - The Golden Era with TMDB poster URLs
 MOVIES_90S = [
-    "The Matrix (1999)",
-    "Fight Club (1999)",
-    "Pulp Fiction (1994)",
-    "The Shawshank Redemption (1994)",
-    "Forrest Gump (1994)",
-    "Titanic (1997)",
-    "Good Will Hunting (1997)",
-    "The Big Lebowski (1998)",
-    "Se7en (1995)",
-    "Fargo (1996)",
-    "Heat (1995)",
-    "The Usual Suspects (1995)",
-    "Trainspotting (1996)",
-    "L.A. Confidential (1997)",
-    "Saving Private Ryan (1998)",
-    "The Truman Show (1998)",
-    "American Beauty (1999)",
-    "Office Space (1999)",
-    "The Fifth Element (1997)",
-    "12 Monkeys (1995)"
+    {
+        "title": "The Matrix (1999)",
+        "poster": "https://image.tmdb.org/t/p/w200/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg"
+    },
+    {
+        "title": "Fight Club (1999)",
+        "poster": "https://image.tmdb.org/t/p/w200/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
+    },
+    {
+        "title": "Pulp Fiction (1994)",
+        "poster": "https://image.tmdb.org/t/p/w200/d5iIlFn5s0ImszYzBPb8JPIfbXD.jpg"
+    },
+    {
+        "title": "The Shawshank Redemption (1994)",
+        "poster": "https://image.tmdb.org/t/p/w200/9cqNxx0GxF0bflZmeSMuL5tnGzr.jpg"
+    },
+    {
+        "title": "Forrest Gump (1994)",
+        "poster": "https://image.tmdb.org/t/p/w200/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg"
+    },
+    {
+        "title": "Titanic (1997)",
+        "poster": "https://image.tmdb.org/t/p/w200/9xjZS2rlVxm8SFx8kPC3aIGCOYQ.jpg"
+    },
+    {
+        "title": "Good Will Hunting (1997)",
+        "poster": "https://image.tmdb.org/t/p/w200/bABCBKYBK7A5G1x0FzoeoNfuj2b.jpg"
+    },
+    {
+        "title": "The Big Lebowski (1998)",
+        "poster": "https://image.tmdb.org/t/p/w200/o6j3nbR1wUfM7XPZP1DWMQS7RX8.jpg"
+    },
+    {
+        "title": "Se7en (1995)",
+        "poster": "https://image.tmdb.org/t/p/w200/6yoghtyTpznpBik8uj3IhMF19yr.jpg"
+    },
+    {
+        "title": "Fargo (1996)",
+        "poster": "https://image.tmdb.org/t/p/w200/rt7cpEr1uP6RTZykBFhBTtYRLDi.jpg"
+    },
+    {
+        "title": "Heat (1995)",
+        "poster": "https://image.tmdb.org/t/p/w200/rrBuGu0dEccYL3GgJD8t1SYvMud.jpg"
+    },
+    {
+        "title": "The Usual Suspects (1995)",
+        "poster": "https://image.tmdb.org/t/p/w200/bUPmtQzrRhzqYySeiMpv7GurAfm.jpg"
+    },
+    {
+        "title": "Trainspotting (1996)",
+        "poster": "https://image.tmdb.org/t/p/w200/bhY62Dw8iW54DIhxPQerbuB9DOP.jpg"
+    },
+    {
+        "title": "L.A. Confidential (1997)",
+        "poster": "https://image.tmdb.org/t/p/w200/zhx7oMsa9u4ioKtNOByDwLSB5lz.jpg"
+    },
+    {
+        "title": "Saving Private Ryan (1998)",
+        "poster": "https://image.tmdb.org/t/p/w200/uqx37cS8cpHg8U35f9U5IuAc09c.jpg"
+    },
+    {
+        "title": "The Truman Show (1998)",
+        "poster": "https://image.tmdb.org/t/p/w200/vuza0WtBNXXa1dC7bQjCeTOMdHg.jpg"
+    },
+    {
+        "title": "American Beauty (1999)",
+        "poster": "https://image.tmdb.org/t/p/w200/wby9315QzVKdW9BonAefg8jGTTb.jpg"
+    },
+    {
+        "title": "Office Space (1999)",
+        "poster": "https://image.tmdb.org/t/p/w200/4dLsLYXerWmMDsU5qmp5RbBjpk7.jpg"
+    },
+    {
+        "title": "The Fifth Element (1997)",
+        "poster": "https://image.tmdb.org/t/p/w200/fPtlCO1yQtnoLHOwKtWz7db6RGU.jpg"
+    },
+    {
+        "title": "12 Monkeys (1995)",
+        "poster": "https://image.tmdb.org/t/p/w200/6Sj9wDu3YugthXsU0Vry5XFAZGg.jpg"
+    }
 ]
 
 # Initialize session state
@@ -169,7 +229,7 @@ def show_welcome():
         st.rerun()
 
 def show_intro():
-    """Capture username and favorite movie - make it fun!"""
+    """Capture username and favorite movie - make it fun with poster grid!"""
     st.title("🎬 Quick Intro")
     st.header("Before we test AI fidelity, let's test YOUR taste in 90s cinema!")
 
@@ -183,27 +243,67 @@ def show_intro():
         label_visibility="collapsed"
     )
 
-    # Movie selection
+    # Movie poster grid selection
     st.subheader("Pick your favorite 90s movie:")
-    st.write("*(This is the real test)*")
+    st.write("*(Click a poster to select)*")
 
-    movie = st.selectbox(
-        "Favorite 90s Movie",
-        options=["-- Select a movie --"] + MOVIES_90S,
-        label_visibility="collapsed"
-    )
+    # Initialize selected movie in session state if needed
+    if 'selected_movie' not in st.session_state:
+        st.session_state.selected_movie = None
+
+    # Display posters in a grid (5 columns x 4 rows)
+    cols_per_row = 5
+    for row_start in range(0, len(MOVIES_90S), cols_per_row):
+        cols = st.columns(cols_per_row)
+        for i, col in enumerate(cols):
+            movie_idx = row_start + i
+            if movie_idx < len(MOVIES_90S):
+                movie = MOVIES_90S[movie_idx]
+                with col:
+                    # Check if this movie is selected
+                    is_selected = st.session_state.selected_movie == movie['title']
+
+                    # Show poster with border if selected
+                    if is_selected:
+                        st.markdown(
+                            f'<div style="border: 4px solid #00ff00; border-radius: 8px; padding: 2px;">'
+                            f'<img src="{movie["poster"]}" style="width: 100%; border-radius: 4px;"></div>',
+                            unsafe_allow_html=True
+                        )
+                    else:
+                        st.image(movie['poster'], use_container_width=True)
+
+                    # Button to select this movie
+                    if st.button(
+                        "✓" if is_selected else "Select",
+                        key=f"movie_{movie_idx}",
+                        type="primary" if is_selected else "secondary",
+                        use_container_width=True
+                    ):
+                        st.session_state.selected_movie = movie['title']
+                        st.rerun()
+
+    # Show selected movie
+    selected_movie = st.session_state.selected_movie
+
+    st.divider()
 
     # Validation and continue
-    if username and movie != "-- Select a movie --":
-        st.success(f"Nice choice, **{username}**! *{movie}* is a classic.")
+    if username and selected_movie:
+        st.success(f"Nice choice, **{username}**! *{selected_movie}* is a classic.")
 
-        if st.button("Let's Do This →", type="primary"):
+        if st.button("Let's Do This →", type="primary", use_container_width=True):
             st.session_state.username = username
-            st.session_state.favorite_movie = movie
+            st.session_state.favorite_movie = selected_movie
             st.session_state.stage = 'calibration'
             st.rerun()
     else:
-        st.warning("Please enter a username and pick a movie to continue.")
+        missing = []
+        if not username:
+            missing.append("enter a username")
+        if not selected_movie:
+            missing.append("click a movie poster")
+        st.warning(f"Please {' and '.join(missing)} to continue.")
 
 def show_calibration():
     """Calibration screen with Gold Standard"""
