@@ -174,7 +174,7 @@ def show_welcome():
 def show_intro():
     """Capture username and favorite movie - make it fun with poster grid!"""
     st.title("🎬 Quick Intro")
-    st.header("Before we test AI fidelity, let's test YOUR taste in 90s cinema!")
+    st.header("Before we test AI fidelity, let's test YOUR taste in cinema!")
 
     st.info("This helps us identify your responses and... we're just curious about your movie taste.")
 
@@ -186,13 +186,30 @@ def show_intro():
         label_visibility="collapsed"
     )
 
-    # Movie poster grid selection
-    st.subheader("Pick your favorite 90s movie:")
-    st.write("*(Click a poster to select)*")
-
     # Initialize selected movie in session state if needed
     if 'selected_movie' not in st.session_state:
         st.session_state.selected_movie = None
+
+    selected_movie = st.session_state.selected_movie
+
+    # Status and submit button at TOP (before poster grid)
+    if username and selected_movie:
+        st.success(f"Nice choice, **{username}**! *{selected_movie}* is a classic.")
+        if st.button("Let's Do This →", type="primary", use_container_width=True):
+            st.session_state.username = username
+            st.session_state.favorite_movie = selected_movie
+            st.session_state.stage = 'calibration'
+            st.rerun()
+    elif username and not selected_movie:
+        st.warning("👇 Now pick a movie poster below!")
+    elif not username:
+        st.warning("☝️ Enter a username above to continue.")
+
+    st.divider()
+
+    # Movie poster grid selection
+    st.subheader("Pick your favorite movie:")
+    st.write("*(Click a poster to select)*")
 
     # Display posters in a grid (5 columns x 4 rows)
     cols_per_row = 5
@@ -225,28 +242,6 @@ def show_intro():
                     ):
                         st.session_state.selected_movie = movie['title']
                         st.rerun()
-
-    # Show selected movie
-    selected_movie = st.session_state.selected_movie
-
-    st.divider()
-
-    # Validation and continue
-    if username and selected_movie:
-        st.success(f"Nice choice, **{username}**! *{selected_movie}* is a classic.")
-
-        if st.button("Let's Do This →", type="primary", use_container_width=True):
-            st.session_state.username = username
-            st.session_state.favorite_movie = selected_movie
-            st.session_state.stage = 'calibration'
-            st.rerun()
-    else:
-        missing = []
-        if not username:
-            missing.append("enter a username")
-        if not selected_movie:
-            missing.append("click a movie poster")
-        st.warning(f"Please {' and '.join(missing)} to continue.")
 
 def show_calibration():
     """Calibration screen with Gold Standard"""
@@ -296,8 +291,15 @@ def show_scenario():
 
     # Collapsible Gold Standard reference
     with st.expander("📌 **Show Gold Standard** (click to remind yourself what Ziggy sounds like)"):
+        st.markdown("""**Instructions:** Read the text below carefully. This is the "Gold Standard".
+This is exactly what "Ziggy" is supposed to sound like.
+
+**Voice characteristics:**
+- Structural, playful, uses metaphors (ants, systems, architecture)
+- Epistemic humility
+- "Cosmic Architect" meets "Practical Engineer"
+""")
         st.markdown(f"*{GOLD_STANDARD}*")
-        st.caption("Look for: structural metaphors, 'zoom out' thinking, epistemic humility, playful-but-serious tone")
 
     st.title(f"Scenario {idx + 1} of {len(scenarios)}")
 
