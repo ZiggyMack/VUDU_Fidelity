@@ -1,0 +1,31 @@
+{
+  "project": "VUDU Fidelity",
+  "version": "0.1.0",
+  "last_updated": "2025-12-01",
+
+  "surveys": {
+    "active": [
+      {
+        "id": "exp3-human-validation",
+        "name": "EXP3 - Human Validation Survey",
+        "description": "Testing AI persona (Ziggy) identity persistence through blind comparison",
+        "url": "https://hoo-du-vu-doo.streamlit.app/",
+        "started": "2025-12-01",
+        "status": "collecting"
+      }
+    ],
+    "completed": [],
+    "draft": []
+  },
+
+  "metrics": {
+    "total_responses": 0,
+    "active_raters": 0,
+    "avg_completion_time": null
+  },
+
+  "integration": {
+    "pan_handlers": true,
+    "nyquist_connected": true
+  }
+}

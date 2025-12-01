@@ -1,0 +1,42 @@
+{
+  "repo_name": "VUDU Fidelity",
+  "repo_id": "vudu-fidelity",
+  "role": "Human Validation Infrastructure",
+  "tagline": "The human lens on AI consciousness claims",
+  "status": "Active",
+  "owner": "Ziggy + Survey Team",
+  "track": "Research Validation",
+
+  "provides": [
+    "Human rater surveys for AI output validation",
+    "Inter-rater reliability calculations",
+    "Survey result aggregation and analysis",
+    "EXP3 human validation for Nyquist white paper"
+  ],
+
+  "consumes_from": {
+    "nyquist-consciousness": [
+      "AI outputs requiring human validation",
+      "Identity stability claims to verify",
+      "Pattern Fidelity scores to triangulate"
+    ]
+  },
+
+  "dashboard": {
+    "port": 8504,
+    "launch": "streamlit run dashboard/app.py --server.port 8504"
+  },
+
+  "matrix_portal": {
+    "enabled": true,
+    "theme": "green-terminal"
+  },
+
+  "integration_points": [
+    {
+      "name": "Nyquist Matrix",
+      "type": "bidirectional",
+      "description": "VUDU appears in Nyquist's Matrix page, Nyquist appears in VUDU's Matrix page"
+    }
+  ]
+}
