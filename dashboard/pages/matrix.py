@@ -13,68 +13,243 @@ from config import PATHS
 def render():
     """Render The Matrix portal hub"""
 
-    # Matrix theme CSS - GREEN ON BLACK TERMINAL
+    # Matrix theme CSS - GREEN ON BLACK TERMINAL AESTHETIC (COMPLETE)
     st.markdown("""
         <style>
-        /* BLACK BACKGROUND */
-        .stApp, .main, .block-container,
-        [data-testid="stAppViewContainer"] {
+        /* ===== MATRIX THEME - GREEN ON BLACK TERMINAL AESTHETIC ===== */
+
+        /* ===== BASE COLORS ===== */
+        :root {
+            --matrix-black: #0a0a0a;
+            --matrix-dark: #0d0d0d;
+            --matrix-green: #00ff41;
+            --matrix-green-dim: #00cc33;
+            --matrix-green-dark: #004d1a;
+        }
+
+        /* ===== BLACK BACKGROUND EVERYWHERE ===== */
+        html, body,
+        .stApp,
+        .stApp > div,
+        .stApp [data-testid="stAppViewContainer"],
+        [data-testid="stAppViewContainer"],
+        [data-testid="stAppViewContainer"] > div,
+        .main,
+        .main > div,
+        .main .block-container,
+        .block-container,
+        [data-testid="stVerticalBlock"],
+        [data-testid="stHorizontalBlock"],
+        [data-testid="stHeader"],
+        [data-testid="stToolbar"],
+        [data-testid="stDecoration"],
+        [data-testid="stStatusWidget"],
+        [data-testid="column"],
+        [data-testid="stElementContainer"] {
             background-color: #0a0a0a !important;
             background: #0a0a0a !important;
         }
 
-        /* ALL TEXT MATRIX GREEN */
-        .stApp p, .stApp span, .stApp div,
-        .stApp h1, .stApp h2, .stApp h3,
-        .main p, .main span, .main div {
+        /* ===== ALL TEXT MATRIX GREEN ===== */
+        .stApp p, .stApp span, .stApp div, .stApp label, .stApp li,
+        .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+        .main p, .main span, .main div, .main label, .main li,
+        .main h1, .main h2, .main h3, .main h4, .main h5, .main h6,
+        [data-testid="stMarkdownContainer"] p,
+        [data-testid="stMarkdownContainer"] li,
+        [data-testid="stMarkdownContainer"] span,
+        [data-testid="stMarkdownContainer"],
+        p, span, div, li, label {
             color: #00ff41 !important;
         }
 
-        /* HEADERS */
-        h1, h2, h3 {
+        /* ===== HEADERS ===== */
+        h1, h2, h3, h4, h5, h6 {
             color: #00ff41 !important;
-            font-family: 'Courier New', monospace;
+            font-family: 'Courier New', monospace !important;
+            font-weight: bold !important;
+        }
+
+        h1 {
             border-bottom: 2px solid #00ff41;
+            padding-bottom: 0.3em;
         }
 
-        /* Links */
-        a { color: #00cc33 !important; }
-        a:hover { color: #00ff41 !important; text-shadow: 0 0 10px rgba(0,255,65,0.5); }
+        h2, h3 {
+            border-bottom: 1px solid #00ff41;
+            padding-bottom: 0.2em;
+        }
 
-        /* Portal cards */
+        /* ===== BOLD TEXT WITH GLOW ===== */
+        strong, b {
+            color: #00ff41 !important;
+            text-shadow: 0 0 5px rgba(0,255,65,0.5);
+        }
+
+        em, i {
+            color: #00cc33 !important;
+        }
+
+        /* ===== LINKS ===== */
+        a {
+            color: #00cc33 !important;
+        }
+        a:hover {
+            color: #00ff41 !important;
+            text-shadow: 0 0 10px rgba(0,255,65,0.5);
+        }
+
+        /* ===== BLOCKQUOTES ===== */
+        blockquote, blockquote p, blockquote span {
+            color: #00cc33 !important;
+            border-left: 3px solid #00ff41 !important;
+            background: rgba(0,255,65,0.05) !important;
+        }
+
+        /* ===== HORIZONTAL RULES ===== */
+        hr {
+            border-color: #00ff41 !important;
+            background-color: #00ff41 !important;
+        }
+
+        /* ===== LISTS ===== */
+        ul, ol, li {
+            color: #00ff41 !important;
+        }
+
+        /* ===== CODE BLOCKS ===== */
+        code {
+            background: rgba(0,255,65,0.1) !important;
+            color: #00ff41 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+
+        pre, pre code,
+        [data-testid="stCodeBlock"],
+        .stCodeBlock,
+        .stCodeBlock pre,
+        .stCodeBlock code {
+            background: #0d0d0d !important;
+            color: #00ff41 !important;
+            border: 1px solid #00ff41 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+
+        /* ===== TABLES ===== */
+        th {
+            background: #004d1a !important;
+            color: #00ff41 !important;
+            border: 1px solid #00ff41 !important;
+        }
+
+        td {
+            color: #00ff41 !important;
+            border-bottom: 1px solid #00ff41 !important;
+            background-color: #0d0d0d !important;
+        }
+
+        /* ===== BUTTONS ===== */
+        .stButton > button {
+            background-color: #0d0d0d !important;
+            color: #00ff41 !important;
+            border: 2px solid #00ff41 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+
+        .stButton > button:hover {
+            background-color: #004d1a !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 15px rgba(0,255,65,0.4);
+        }
+
+        /* ===== INPUTS ===== */
+        input, textarea, select,
+        .stTextInput > div > div > input,
+        .stTextArea > div > div > textarea,
+        .stSelectbox > div > div {
+            background-color: #0d0d0d !important;
+            color: #00ff41 !important;
+            border: 1px solid #00ff41 !important;
+        }
+
+        /* ===== EXPANDERS ===== */
+        [data-testid="stExpander"] {
+            background-color: #0d0d0d !important;
+            border: 1px solid #00ff41 !important;
+        }
+        [data-testid="stExpander"] * {
+            color: #00ff41 !important;
+        }
+
+        /* ===== JSON DISPLAY ===== */
+        .stJson, .stJson * {
+            background: #0d0d0d !important;
+            color: #00ff41 !important;
+        }
+
+        /* ===== PORTAL CARDS ===== */
         .portal-card {
-            background: #0d0d0d;
-            border: 1px solid #00ff41;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(0,255,65,0.1) 0%, rgba(0,204,51,0.05) 100%) !important;
+            border: 2px solid #00ff41 !important;
+            border-radius: 10px;
             padding: 1.5rem;
             margin: 1rem 0;
+            box-shadow: 0 0 20px rgba(0,255,65,0.2);
         }
         .portal-card:hover {
-            box-shadow: 0 0 20px rgba(0,255,65,0.3);
+            box-shadow: 0 0 30px rgba(0,255,65,0.4);
         }
         .portal-card h3 {
             color: #00ff41 !important;
             margin-top: 0;
+            border-bottom: none !important;
         }
-        .portal-card p, .portal-card span {
+        .portal-card p, .portal-card span, .portal-card em {
             color: #00cc33 !important;
         }
+        .portal-card strong {
+            color: #00ff41 !important;
+        }
 
-        /* Status badges */
+        /* ===== STATUS BADGES ===== */
         .status-badge {
             padding: 0.25rem 0.5rem;
             border-radius: 4px;
             font-size: 0.75rem;
             font-weight: bold;
         }
-        .badge-active { background: rgba(0,255,65,0.2); border: 1px solid #00ff41; }
-        .badge-concept { background: rgba(255,215,0,0.2); border: 1px solid #ffd700; color: #ffd700 !important; }
-
-        /* Code blocks */
-        pre, code {
-            background: #0d0d0d !important;
+        .badge-active {
+            background: rgba(0,255,65,0.2) !important;
             color: #00ff41 !important;
             border: 1px solid #00ff41 !important;
+        }
+        .badge-here {
+            background: rgba(0,255,65,0.3) !important;
+            color: #00ff41 !important;
+            border: 1px solid #00ff41 !important;
+            text-shadow: 0 0 5px rgba(0,255,65,0.5);
+        }
+        .badge-concept {
+            background: rgba(255,215,0,0.2) !important;
+            border: 1px solid #ffd700 !important;
+            color: #ffd700 !important;
+        }
+
+        /* ===== METRICS ===== */
+        [data-testid="stMetricValue"] {
+            color: #00ff41 !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        [data-testid="stMetricLabel"] {
+            color: #00cc33 !important;
+        }
+
+        /* ===== FINAL OVERRIDE ===== */
+        .main .block-container * {
+            color: #00ff41 !important;
+        }
+        .main .block-container strong, .main .block-container b {
+            text-shadow: 0 0 5px rgba(0,255,65,0.5);
         }
         </style>
     """, unsafe_allow_html=True)

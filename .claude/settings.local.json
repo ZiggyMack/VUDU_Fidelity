@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd VUDU Fidelity Dashboard + Pan Handlers integration\n\nDashboard structure:\n- dashboard/app.py - Main Streamlit app with dark sidebar\n- dashboard/config.py - Paths and settings\n- dashboard/utils.py - Helper functions for survey data\n- dashboard/pages/overview.py - Survey status overview\n- dashboard/pages/surveys.py - Active/completed surveys management\n- dashboard/pages/results.py - Survey results and analysis\n- dashboard/pages/matrix.py - Pan Handlers portal (green terminal aesthetic)\n- dashboard/pages/faq.py - Help and FAQ\n\nPan Handlers integration:\n- panhandlers_manifest.json - Repo role and integration points\n- VUDU_STATUS.json - Survey tracking and metrics\n\nRun locally: streamlit run dashboard/app.py --server.port 8504\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nUpdate dashboard_claude.md for VUDU Fidelity\n\nAdapted cold-boot prompt for VUDU Fidelity dashboard:\n- Updated file paths and page structure\n- Added VUDU-specific data sources (VUDU_STATUS.json, results/)\n- Documented utility functions in utils.py\n- Added key concepts (PFI, T3/CONTROL, Gold Standard, EXP3)\n- Documented Pan Handlers integration points\n- Fixed markdown linting warnings\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(streamlit run:*)",
+      "Bash(pip show:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
