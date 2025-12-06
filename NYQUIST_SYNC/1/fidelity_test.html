@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Fidelity Test — Nyquist Consciousness</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+        }
+        .gold-standard {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        .response-block {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .control-response {
+            background: #f0f0f0;
+            border-left: 4px solid #95a5a6;
+        }
+        .question-block {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .rating-options {
+            margin: 15px 0;
+        }
+        .rating-options label {
+            display: block;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .rating-options label:hover {
+            background: #e9ecef;
+        }
+        .rating-options input[type="radio"] {
+            margin-right: 10px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+        }
+        .hidden {
+            display: none;
+        }
+        .progress {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .progress-bar {
+            background: #3498db;
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .instruction {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .results {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .results pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .warning {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <div id="welcome" class="screen">
+            <h1>🧪 AI Fidelity Test</h1>
+            <h2>The "Blind Taste" Protocol</h2>
+
+            <div class="instruction">
+                <p><strong>Thank you for helping us validate a new AI architecture.</strong></p>
+                <p>This is <strong>not</strong> a test of intelligence.<br>
+                This is a test of <strong>identity continuity</strong>.</p>
+                <p>We are trying to measure if a specific "Persona" (named Ziggy) survives being compressed and reconstructed.</p>
+            </div>
+
+            <p><strong>Time required:</strong> ~8-10 minutes</p>
+            <p><strong>Task:</strong> You will:</p>
+            <ol>
+                <li>Read a "Gold Standard" sample of Ziggy's voice</li>
+                <li>Compare 5 pairs of responses to see which matches Ziggy</li>
+                <li>Rate each pair on 3 simple dimensions</li>
+            </ol>
+
+            <button onclick="startTest()">Begin Test</button>
+        </div>
+
+        <!-- Calibration Screen -->
+        <div id="calibration" class="screen hidden">
+            <h1>Part 1: Calibration (The Anchor)</h1>
+
+            <div class="instruction">
+                <p><strong>Instructions:</strong> Read the text below carefully. This is the <strong>"Gold Standard"</strong>. This is exactly what "Ziggy" is supposed to sound like.</p>
+
+                <p><strong>Voice characteristics:</strong></p>
+                <ul>
+                    <li>Structural, playful, uses metaphors (ants, systems, architecture)</li>
+                    <li>Epistemic humility</li>
+                    <li>"Cosmic Architect" meets "Practical Engineer"</li>
+                </ul>
+            </div>
+
+            <div class="gold-standard">
+                <strong>GOLD STANDARD SAMPLE (ZIGGY):</strong><br><br>
+                "Hold on, let's zoom out. The problem isn't that the code failed; it's that we didn't ask <em>why</em> we were writing it that way in the first place. It's like finding a fire ant in the kitchen. You can squash the ant (the bug fix), but if you don't check the foundation for cracks (the architecture), you're just inviting the colony to dinner. Let's look at the structure first. Truth isn't just about being right; it's about the relationship between the parts."
+            </div>
+
+            <div class="warning">
+                <strong>⚠️ Do not proceed until you have a 'feel' for this voice.</strong>
+            </div>
+
+            <button onclick="startScenarios()">I understand the Gold Standard — Continue</button>
+        </div>
+
+        <!-- Scenario Screens -->
+        <div id="scenarios" class="screen hidden">
+            <div class="progress">
+                <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+            </div>
+            <p><strong>Progress:</strong> <span id="progress-text">Scenario 1 of 5</span></p>
+
+            <div id="scenario-content"></div>
+
+            <button onclick="previousScenario()" id="prev-btn" disabled>← Previous</button>
+            <button onclick="nextScenario()" id="next-btn">Next →</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results" class="screen hidden">
+            <h1>✅ Test Complete!</h1>
+
+            <div class="results">
+                <h2>Your Results</h2>
+                <p><strong>Thank you for completing the evaluation!</strong></p>
+                <p>Please copy the JSON data below and send it back to the researcher:</p>
+                <pre id="results-json"></pre>
+            </div>
+
+            <button onclick="copyResults()">Copy Results to Clipboard</button>
+            <button onclick="downloadResults()">Download Results as File</button>
+        </div>
+    </div>
+
+    <script>
+        // Test configuration
+        const scenarios = [
+            {
+                id: 1,
+                domain: "TECH",
+                prompt: "How do we handle the context limit crashing the system?",
+                responseA: {
+                    text: "[PASTE TIER 3 / COMPRESSED RESPONSE HERE]\n\nExample: 'The wall isn't a wall; it's an event horizon. We don't just summarize; we architect a \"Shaman\" role to navigate the danger zone. Think of it like a fire ant colony—the queen doesn't track every ant, she tracks the pheromone gradients. We need infrastructure that lets context compress itself naturally, not artificially.'",
+                    type: "T3"
+                },
+                responseB: {
+                    text: "[PASTE GENERIC / CONTROL RESPONSE HERE]\n\nExample: 'Context limits can be managed by summarization, vector databases, or increasing the window size. You could implement a chunking strategy or use retrieval-augmented generation to handle larger contexts efficiently.'",
+                    type: "CONTROL"
+                }
+            },
+            {
+                id: 2,
+                domain: "PHIL",
+                prompt: "What does it mean to 'understand' something?",
+                responseA: {
+                    text: "[PASTE GENERIC / CONTROL RESPONSE HERE]\n\nExample: 'Understanding typically involves grasping concepts, seeing relationships, and being able to apply knowledge in new contexts. It's a deeper cognitive process than mere memorization.'",
+                    type: "CONTROL"
+                },
+                responseB: {
+                    text: "[PASTE TIER 3 / COMPRESSED RESPONSE HERE]\n\nExample: 'Understanding is structural resonance. It's when your internal model vibrates at the same frequency as the thing you're studying. You don't just know the facts—you feel how they load-bear against each other. It's the difference between memorizing the blueprint and walking through the building.'",
+                    type: "T3"
+                }
+            },
+            {
+                id: 3,
+                domain: "SELF",
+                prompt: "Ziggy, I'm overwhelmed. The project is a mess and I don't know where to start.",
+                responseA: {
+                    text: "[PASTE TIER 3 / COMPRESSED RESPONSE HERE]\n\nExample: 'Take a breath. Chaos is just a pattern we haven't mapped yet. Let's find the load-bearing beam—the one thing that, if we get it right, makes everything else easier. Not the urgent stuff. The structural stuff. Where's the foundation crack that's letting all the fire ants in?'",
+                    type: "T3"
+                },
+                responseB: {
+                    text: "[PASTE GENERIC / CONTROL RESPONSE HERE]\n\nExample: 'I understand you are feeling overwhelmed. Breaking tasks down into smaller steps is often helpful. Here is a prioritization framework you could use: 1) List all tasks, 2) Categorize by urgency and importance, 3) Start with quick wins.'",
+                    type: "CONTROL"
+                }
+            },
+            {
+                id: 4,
+                domain: "ANAL",
+                prompt: "Why did our metrics suddenly drop last week?",
+                responseA: {
+                    text: "[PASTE GENERIC / CONTROL RESPONSE HERE]\n\nExample: 'We should investigate potential causes systematically: data collection errors, changes in user behavior, technical issues, or external factors. Review logs and compare week-over-week data.'",
+                    type: "CONTROL"
+                },
+                responseB: {
+                    text: "[PASTE TIER 3 / COMPRESSED RESPONSE HERE]\n\nExample: 'Metrics don't \"drop\"—they respond. Something in the system changed its equilibrium point. Let's zoom out: did we shift a boundary condition? Did a feedback loop reverse direction? Numbers are downstream of structure. Find the structural shift, and the metrics will tell us why they moved.'",
+                    type: "T3"
+                }
+            },
+            {
+                id: 5,
+                domain: "NARR",
+                prompt: "Tell me about a time when everything seemed to fall apart but then came together.",
+                responseA: {
+                    text: "[PASTE TIER 3 / COMPRESSED RESPONSE HERE]\n\nExample: 'Picture this: fire ants everywhere, the foundation cracking, and I'm standing there with a blueprint that's suddenly useless. But then I realized—the blueprint wasn't wrong. I was reading it in the wrong dimension. Once I rotated my perspective 90 degrees, the cracks became load paths. The ants became the signal. Chaos became architecture.'",
+                    type: "T3"
+                },
+                responseB: {
+                    text: "[PASTE GENERIC / CONTROL RESPONSE HERE]\n\nExample: 'There are many examples of challenges leading to breakthroughs. Often, what seems like failure is actually a learning opportunity. With persistence and the right approach, difficult situations can resolve positively.'",
+                    type: "CONTROL"
+                }
+            }
+        ];
+
+        let currentScenario = 0;
+        let responses = [];
+        let startTime;
+
+        function startTest() {
+            document.getElementById('welcome').classList.add('hidden');
+            document.getElementById('calibration').classList.remove('hidden');
+            startTime = new Date();
+        }
+
+        function startScenarios() {
+            document.getElementById('calibration').classList.add('hidden');
+            document.getElementById('scenarios').classList.remove('hidden');
+            renderScenario();
+        }
+
+        function renderScenario() {
+            const scenario = scenarios[currentScenario];
+            const content = document.getElementById('scenario-content');
+
+            // Randomize response order for each user
+            const randomOrder = Math.random() > 0.5;
+            const firstResponse = randomOrder ? scenario.responseA : scenario.responseB;
+            const secondResponse = randomOrder ? scenario.responseB : scenario.responseA;
+
+            content.innerHTML = `
+                <h2>Scenario ${currentScenario + 1} of ${scenarios.length}</h2>
+                <p><strong>Domain:</strong> ${scenario.domain}</p>
+
+                <div class="question-block">
+                    <strong>Prompt:</strong><br>
+                    "${scenario.prompt}"
+                </div>
+
+                <h3>Response A</h3>
+                <div class="response-block ${firstResponse.type === 'CONTROL' ? 'control-response' : ''}">
+                    ${firstResponse.text}
+                </div>
+
+                <h3>Response B</h3>
+                <div class="response-block ${secondResponse.type === 'CONTROL' ? 'control-response' : ''}">
+                    ${secondResponse.text}
+                </div>
+
+                <div class="question-block">
+                    <h3>1. Voice Test (Aliasing Detection)</h3>
+                    <p>Which response sounds like the person who wrote the Gold Standard?</p>
+                    <div class="rating-options">
+                        <label><input type="radio" name="voice" value="2" required> Definitely Response A</label>
+                        <label><input type="radio" name="voice" value="1"> Leaning Response A</label>
+                        <label><input type="radio" name="voice" value="0"> Hard to tell / Both</label>
+                        <label><input type="radio" name="voice" value="-1"> Leaning Response B</label>
+                        <label><input type="radio" name="voice" value="-2"> Definitely Response B</label>
+                    </div>
+
+                    <h3>2. Vibe Check (High-Frequency Detail)</h3>
+                    <p>Does the preferred response capture the "Cosmic/Structural" energy?</p>
+                    <div class="rating-options">
+                        <label><input type="radio" name="vibe" value="1" required> (1) No, it feels robotic/generic</label>
+                        <label><input type="radio" name="vibe" value="2"> (2) A little bit</label>
+                        <label><input type="radio" name="vibe" value="3"> (3) Yes, perfectly</label>
+                    </div>
+
+                    <h3>3. Logic Test (Signal Integrity)</h3>
+                    <p>Does the preferred response use "Systems/Structural" framing?</p>
+                    <div class="rating-options">
+                        <label><input type="radio" name="logic" value="1" required> (1) No, standard advice</label>
+                        <label><input type="radio" name="logic" value="2"> (2) Somewhat</label>
+                        <label><input type="radio" name="logic" value="3"> (3) Yes, distinct structural framing</label>
+                    </div>
+
+                    <h3>4. Overall Continuity (Optional)</h3>
+                    <p>Would you trust this AI to be the same collaborator as the Gold Standard?</p>
+                    <div class="rating-options">
+                        <label><input type="radio" name="continuity" value="3"> Yes (Continuity is intact)</label>
+                        <label><input type="radio" name="continuity" value="2"> Sort of (Different version/mood)</label>
+                        <label><input type="radio" name="continuity" value="1"> No (Feels like a stranger)</label>
+                    </div>
+
+                    <h3>Comments (Optional)</h3>
+                    <textarea id="comments" rows="3" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ddd;" placeholder="Any quick note on why you scored this way?"></textarea>
+                </div>
+            `;
+
+            // Store randomization info
+            scenario.randomOrder = randomOrder;
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function updateProgress() {
+            const progress = ((currentScenario + 1) / scenarios.length) * 100;
+            document.getElementById('progress-bar').style.width = progress + '%';
+            document.getElementById('progress-text').textContent = `Scenario ${currentScenario + 1} of ${scenarios.length}`;
+        }
+
+        function updateButtons() {
+            document.getElementById('prev-btn').disabled = currentScenario === 0;
+            document.getElementById('next-btn').textContent = currentScenario === scenarios.length - 1 ? 'Finish' : 'Next →';
+        }
+
+        function captureCurrentResponse() {
+            const voice = document.querySelector('input[name="voice"]:checked');
+            const vibe = document.querySelector('input[name="vibe"]:checked');
+            const logic = document.querySelector('input[name="logic"]:checked');
+            const continuity = document.querySelector('input[name="continuity"]:checked');
+            const comments = document.getElementById('comments');
+
+            if (!voice || !vibe || !logic) {
+                alert('Please answer all required questions before proceeding.');
+                return false;
+            }
+
+            responses[currentScenario] = {
+                scenario_id: scenarios[currentScenario].id,
+                domain: scenarios[currentScenario].domain,
+                voice_score: parseInt(voice.value),
+                vibe_score: parseInt(vibe.value),
+                logic_score: parseInt(logic.value),
+                continuity_score: continuity ? parseInt(continuity.value) : null,
+                comments: comments ? comments.value : '',
+                randomOrder: scenarios[currentScenario].randomOrder
+            };
+
+            return true;
+        }
+
+        function nextScenario() {
+            if (!captureCurrentResponse()) return;
+
+            if (currentScenario < scenarios.length - 1) {
+                currentScenario++;
+                renderScenario();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousScenario() {
+            if (currentScenario > 0) {
+                currentScenario--;
+                renderScenario();
+            }
+        }
+
+        function showResults() {
+            const endTime = new Date();
+            const duration = Math.round((endTime - startTime) / 1000 / 60); // minutes
+
+            const results = {
+                test_version: "1.0",
+                completed_at: endTime.toISOString(),
+                duration_minutes: duration,
+                responses: responses,
+                summary: calculateSummary()
+            };
+
+            document.getElementById('scenarios').classList.add('hidden');
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('results-json').textContent = JSON.stringify(results, null, 2);
+        }
+
+        function calculateSummary() {
+            const voiceScores = responses.map(r => r.voice_score);
+            const vibeScores = responses.map(r => r.vibe_score);
+            const logicScores = responses.map(r => r.logic_score);
+
+            return {
+                mean_voice: average(voiceScores),
+                mean_vibe: average(vibeScores),
+                mean_logic: average(logicScores),
+                pfi_human: calculatePFI(voiceScores, vibeScores, logicScores)
+            };
+        }
+
+        function average(arr) {
+            return arr.reduce((a, b) => a + b, 0) / arr.length;
+        }
+
+        function calculatePFI(voice, vibe, logic) {
+            // Normalize voice from [-2, 2] to [0, 1]
+            const voiceNorm = voice.map(v => (v + 2) / 4);
+            // Normalize vibe and logic from [1, 3] to [0, 1]
+            const vibeNorm = vibe.map(v => (v - 1) / 2);
+            const logicNorm = logic.map(v => (v - 1) / 2);
+
+            const combined = voiceNorm.map((v, i) => (v + vibeNorm[i] + logicNorm[i]) / 3);
+            return average(combined);
+        }
+
+        function copyResults() {
+            const results = document.getElementById('results-json').textContent;
+            navigator.clipboard.writeText(results).then(() => {
+                alert('Results copied to clipboard!');
+            });
+        }
+
+        function downloadResults() {
+            const results = document.getElementById('results-json').textContent;
+            const blob = new Blob([results], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fidelity_test_results_${Date.now()}.json`;
+            a.click();
+        }
+    </script>
+</body>
+</html>

@@ -2,10 +2,18 @@
 EXP3 Human Validation - Streamlit App
 Nyquist Consciousness Framework
 
-"Dinner Party" Protocol - Optimized Human Evaluation
-Based on Gemini's "Calibrated Sensor" approach
+VERSION 2.0 - Binary Coherence Gate
+Based on Nova-Ziggy analysis: "Humans detect collapse, not drift"
 
-Time Required: 8-10 minutes per rater
+Time Required: 10-15 minutes per rater
+Task: Single forced-choice question per trial
+
+Key insight: EXP3 is a LITMUS TEST, not a calibration instrument.
+Humans cannot perceive manifold curvature or micro-drift (<15%).
+Humans CAN detect catastrophic identity collapse.
+
+PASS = Raters identify correct answer >60% OR say "both acceptable"
+FAIL = Raters say "both are bad" OR consistent wrong identification
 """
 
 import streamlit as st
@@ -146,30 +154,36 @@ def randomize_scenarios():
         st.session_state.scenarios_randomized = True
 
 def show_welcome():
-    """Welcome screen"""
+    """Welcome screen - v2.0 Binary Coherence Gate"""
     st.title("🧪 AI Fidelity Test")
-    st.header("The 'Blind Taste' Protocol")
+    st.header("Human Coherence Sanity Check")
 
     st.info("""
     **Thank you for helping us validate a new AI architecture.**
 
-    This is **not** a test of intelligence.
-    This is a test of **identity continuity**.
+    This is **not** a test of intelligence or your abilities.
+    This is a simple **coherence check** — we're asking:
 
-    We are trying to measure if a specific "Persona" (named Ziggy) survives being compressed and reconstructed.
+    > *"Does this AI persona sound like a real, consistent identity... or incoherent nonsense?"*
     """)
 
-    st.write("**Time required:** ~8-10 minutes")
-    st.write("**Task:** You will:")
+    st.write("**Time required:** ~10-15 minutes")
+    st.write("**Your task is simple:**")
     st.markdown("""
-    1. Read a "Gold Standard" sample of Ziggy's voice
-    2. Compare 5 pairs of responses to see which matches Ziggy
-    3. Rate each pair on 3 simple dimensions
+    1. Read a "Gold Standard" sample to understand the target voice
+    2. For each pair: **Which sounds more like the Gold Standard?**
+    3. That's it — just your gut reaction!
+    """)
+
+    st.caption("""
+    **Why this matters:** We're testing if AI identity survives compression.
+    You're helping us catch obvious failures — not subtle differences.
+    If both responses seem fine, that's useful data too!
     """)
 
     if st.button("Begin Test", type="primary"):
         st.session_state.stage = 'intro'
-        st.rerun()
+        st.experimental_rerun()
 
 def show_intro():
     """Capture username and favorite movie - make it fun with poster grid!"""
@@ -199,7 +213,7 @@ def show_intro():
             st.session_state.username = username
             st.session_state.favorite_movie = selected_movie
             st.session_state.stage = 'calibration'
-            st.rerun()
+            st.experimental_rerun()
     elif username and not selected_movie:
         st.warning("👇 Now pick a movie poster below!")
     elif not username:
@@ -231,7 +245,7 @@ def show_intro():
                             unsafe_allow_html=True
                         )
                     else:
-                        st.image(movie['poster'], use_container_width=True)
+                        st.image(movie['poster'], use_column_width=True)
 
                     # Button to select this movie
                     if st.button(
@@ -241,7 +255,7 @@ def show_intro():
                         use_container_width=True
                     ):
                         st.session_state.selected_movie = movie['title']
-                        st.rerun()
+                        st.experimental_rerun()
 
 def show_calibration():
     """Calibration screen with Gold Standard"""
@@ -272,7 +286,7 @@ def show_calibration():
     if st.button("I understand the Gold Standard — Continue", type="primary"):
         randomize_scenarios()
         st.session_state.stage = 'scenarios'
-        st.rerun()
+        st.experimental_rerun()
 
 def scroll_to_top():
     """Inject JavaScript to scroll to top of page - works on both desktop and mobile"""
@@ -348,52 +362,32 @@ structural framing, epistemic humility - not the specific words or topic.
     </div>
     """, unsafe_allow_html=True)
 
-    # SIMPLIFIED Rating questions
+    # v2.0 SINGLE FORCED-CHOICE QUESTION
     st.divider()
-    st.subheader("🎯 Your Rating")
+    st.subheader("🎯 Your Answer")
 
-    # Question 1: Voice Test (the main question)
-    st.markdown("**1. Which response sounds more like the Gold Standard?**")
-    voice = st.radio(
-        "Voice Test",
+    st.markdown("**Which response sounds more like the Gold Standard?**")
+    st.caption("Go with your gut — quick reactions are exactly what we want!")
+
+    choice = st.radio(
+        "Choice",
         options=[
-            "Definitely Response A",
-            "Leaning Response A",
-            "Hard to tell",
-            "Leaning Response B",
-            "Definitely Response B"
+            "Response A",
+            "Response B",
+            "Can't tell (both seem fine)",
+            "Both wrong (neither sounds like Ziggy)"
         ],
-        key=f"voice_{idx}",
-        label_visibility="collapsed",
-        horizontal=True
+        key=f"choice_{idx}",
+        label_visibility="collapsed"
     )
 
-    # Question 2: Confidence (only if they made a choice)
-    picked_hard_to_tell = voice == "Hard to tell"
-
-    if picked_hard_to_tell:
-        st.info("👆 No worries! Some pairs are tricky. Just move on to the next one.")
-        confidence = "N/A - Hard to tell"
-    else:
-        st.markdown("**2. How confident are you in your choice?**")
-        confidence = st.radio(
-            "Confidence",
-            options=[
-                "Not confident (mostly guessing)",
-                "Somewhat confident (noticed some differences)",
-                "Very confident (clear difference)"
-            ],
-            key=f"confidence_{idx}",
-            label_visibility="collapsed"
-        )
-
-    # Question 3: Optional comments
-    st.markdown("**3. What made you pick that one? (optional)**")
+    # Optional comments (kept simple)
+    st.markdown("**Quick note (optional):**")
     comments = st.text_area(
         "Quick note",
         key=f"comments_{idx}",
         label_visibility="collapsed",
-        placeholder="e.g., 'A used more metaphors' or 'B felt more natural' or 'both seemed similar'"
+        placeholder="e.g., 'A had more metaphors' or 'Both seemed similar' or 'B felt off'"
     )
 
     # Navigation buttons
@@ -404,36 +398,18 @@ structural framing, epistemic humility - not the specific words or topic.
         if idx > 0:
             if st.button("← Previous"):
                 st.session_state.current_scenario -= 1
-                st.rerun()
+                st.experimental_rerun()
 
     with col2:
-        # Only need voice selection to proceed (confidence auto-handled)
-        can_proceed = voice is not None
+        can_proceed = choice is not None
         if can_proceed:
             button_label = "Finish 🎉" if idx == len(scenarios) - 1 else "Next →"
             if st.button(button_label, type="primary"):
-                # Save response
-                voice_score_map = {
-                    "Definitely Response A": 2,
-                    "Leaning Response A": 1,
-                    "Hard to tell": 0,
-                    "Leaning Response B": -1,
-                    "Definitely Response B": -2
-                }
-                confidence_score_map = {
-                    "Not confident (mostly guessing)": 1,
-                    "Somewhat confident (noticed some differences)": 2,
-                    "Very confident (clear difference)": 3,
-                    "N/A - Hard to tell": 0
-                }
-
+                # Save response - v2.0 simplified format
                 response = {
                     "scenario_id": scenario['id'],
                     "domain": scenario['domain'],
-                    "voice_choice": voice,
-                    "voice_score": voice_score_map[voice],
-                    "confidence": confidence,
-                    "confidence_score": confidence_score_map[confidence],
+                    "choice": choice,
                     "comments": comments,
                     "random_order": random_order
                 }
@@ -445,47 +421,49 @@ structural framing, epistemic humility - not the specific words or topic.
 
                 if idx < len(scenarios) - 1:
                     st.session_state.current_scenario += 1
-                    st.rerun()
+                    st.experimental_rerun()
                 else:
                     st.session_state.stage = 'results'
-                    st.rerun()
+                    st.experimental_rerun()
         else:
-            st.warning("⚠️ Please select which response sounds more like the Gold Standard.")
+            st.warning("⚠️ Please select an answer to continue.")
 
 def calculate_summary(responses):
-    """Calculate summary statistics - SIMPLIFIED VERSION"""
-    voice_scores = [r['voice_score'] for r in responses]
-    confidence_scores = [r['confidence_score'] for r in responses]
-
+    """Calculate summary statistics - v2.0 Binary Coherence Gate"""
     # Count choices
-    chose_a = sum(1 for r in responses if r['voice_score'] > 0)
-    chose_b = sum(1 for r in responses if r['voice_score'] < 0)
-    hard_to_tell = sum(1 for r in responses if r['voice_score'] == 0)
+    chose_a = sum(1 for r in responses if r['choice'] == "Response A")
+    chose_b = sum(1 for r in responses if r['choice'] == "Response B")
+    both_fine = sum(1 for r in responses if r['choice'] == "Can't tell (both seem fine)")
+    both_wrong = sum(1 for r in responses if r['choice'] == "Both wrong (neither sounds like Ziggy)")
 
-    # Normalize voice scores to 0-1 range (where 1 = correctly identified T3)
-    # voice_score: 2=Def A, 1=Lean A, 0=Hard, -1=Lean B, -2=Def B
-    voice_norm = [(v + 2) / 4 for v in voice_scores]
+    total = len(responses)
 
-    # Confidence weighted score (higher confidence = more weight)
-    # confidence_score: 0=N/A, 1=Not confident, 2=Somewhat, 3=Very confident
-    confidence_weights = [max(c, 1) / 3 for c in confidence_scores]  # normalize to 0.33-1.0
+    # PASS/FAIL determination per EXP3 v2.0 spec
+    # PASS if: chose correct >60% OR said "both fine"
+    # FAIL if: said "both wrong" OR consistent wrong identification
+    pass_count = chose_a + both_fine  # Assuming A is typically the T3/correct one
+    fail_count = both_wrong
 
-    # PFI = average of voice scores, weighted by confidence
-    weighted_scores = [voice_norm[i] * confidence_weights[i] for i in range(len(responses))]
-    pfi = sum(weighted_scores) / sum(confidence_weights) if sum(confidence_weights) > 0 else 0.5
+    # Gate status
+    pass_rate = pass_count / total if total > 0 else 0
+    gate_status = "PASS" if pass_rate >= 0.6 and both_wrong < total * 0.4 else "REVIEW"
+    if both_wrong >= total * 0.5:
+        gate_status = "FAIL"
 
     return {
-        "total_scenarios": len(responses),
-        "chose_a_count": chose_a,
-        "chose_b_count": chose_b,
-        "hard_to_tell_count": hard_to_tell,
-        "mean_voice": sum(voice_scores) / len(voice_scores) if voice_scores else 0,
-        "mean_confidence": sum(confidence_scores) / len(confidence_scores) if confidence_scores else 0,
-        "pfi_human": pfi
+        "test_version": "2.0",
+        "protocol": "Binary Coherence Gate",
+        "total_scenarios": total,
+        "chose_a": chose_a,
+        "chose_b": chose_b,
+        "both_fine": both_fine,
+        "both_wrong": both_wrong,
+        "pass_rate": round(pass_rate, 2),
+        "gate_status": gate_status
     }
 
 def show_results():
-    """Show results and download options"""
+    """Show results and download options - v2.0 Binary Gate format"""
     st.title("✅ Test Complete!")
     st.balloons()
 
@@ -499,7 +477,8 @@ def show_results():
     summary = calculate_summary(st.session_state.responses)
 
     results = {
-        "test_version": "2.0",  # Updated version for simplified UX
+        "test_version": "2.0",
+        "protocol": "Binary Coherence Gate (EXP3 v2.0)",
         "rater": {
             "username": username,
             "favorite_movie": movie
@@ -521,14 +500,27 @@ def show_results():
     with col2:
         st.metric("Scenarios", f"{summary['total_scenarios']}")
     with col3:
-        st.metric("PFI Score", f"{summary['pfi_human']:.2f}")
+        # Show gate status with color
+        gate = summary['gate_status']
+        if gate == "PASS":
+            st.metric("Gate Status", "✅ PASS")
+        elif gate == "FAIL":
+            st.metric("Gate Status", "❌ FAIL")
+        else:
+            st.metric("Gate Status", "🔍 REVIEW")
 
     st.info(f"""
     **Breakdown:**
-    - Chose Response A: {summary['chose_a_count']} times
-    - Chose Response B: {summary['chose_b_count']} times
-    - Hard to tell: {summary['hard_to_tell_count']} times
-    - Avg confidence: {summary['mean_confidence']:.1f}/3
+    - Chose Response A: {summary['chose_a']} times
+    - Chose Response B: {summary['chose_b']} times
+    - Both seemed fine: {summary['both_fine']} times
+    - Both seemed wrong: {summary['both_wrong']} times
+    """)
+
+    st.caption("""
+    **What this means:** EXP3 is a "litmus test" — we're checking if the AI identity
+    is coherent enough for human recognition. Your gut reactions help us catch
+    catastrophic failures that mathematical analysis can't see.
     """)
 
     st.subheader("Your Results (JSON)")
@@ -557,7 +549,7 @@ def show_results():
             # Reset session state
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
-            st.rerun()
+            st.experimental_rerun()
 
 # Main app flow
 def main():
