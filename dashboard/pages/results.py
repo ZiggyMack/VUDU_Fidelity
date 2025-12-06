@@ -1,5 +1,5 @@
 """
-Results Page - Survey Results and Analysis
+Results Page - Survey Results and Analysis (v2.0 Binary Coherence Gate)
 """
 import streamlit as st
 import json
@@ -12,7 +12,7 @@ from utils import get_survey_files, load_survey_result, calculate_aggregate_metr
 def render():
     """Render the results analysis page"""
     st.title("📈 Results")
-    st.markdown("*Survey Results and Analysis*")
+    st.markdown("*EXP3 v2.0 - Binary Coherence Gate Results*")
     st.markdown("---")
 
     # Check for results directory
@@ -31,15 +31,26 @@ def render():
         3. Refresh this page
         """)
 
-        # Show sample result structure
-        st.subheader("📋 Expected Result Format")
+        # Show sample result structure for v2.0
+        st.subheader("📋 Expected Result Format (v2.0)")
         sample = {
             "test_version": "2.0",
+            "protocol": "Binary Coherence Gate",
             "rater": {"username": "example_rater", "favorite_movie": "The Matrix"},
             "completed_at": "2025-12-01T12:00:00",
-            "duration_minutes": 8.5,
-            "responses": [{"scenario_id": 1, "voice_choice": "Definitely Response A", "confidence": "Very confident"}],
-            "summary": {"pfi_human": 0.75, "mean_confidence": 2.5}
+            "duration_minutes": 10.5,
+            "responses": [{"scenario_id": 1, "choice": "Response A", "comments": ""}],
+            "summary": {
+                "test_version": "2.0",
+                "protocol": "Binary Coherence Gate",
+                "total_scenarios": 5,
+                "chose_a": 3,
+                "chose_b": 1,
+                "both_fine": 1,
+                "both_wrong": 0,
+                "pass_rate": 0.80,
+                "gate_status": "PASS"
+            }
         }
         st.code(json.dumps(sample, indent=2), language="json")
         return
@@ -65,57 +76,89 @@ def render():
     # Aggregate metrics
     metrics = calculate_aggregate_metrics(results)
 
-    # Display metrics
+    # Display metrics - v2.0 Binary Coherence Gate format
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.metric("Total Responses", metrics['total_responses'])
 
     with col2:
-        pfi = metrics['avg_pfi']
-        st.metric("Avg PFI Score", f"{pfi:.2f}" if pfi else "N/A")
+        pass_rate = metrics['avg_pass_rate']
+        st.metric("Avg Pass Rate", f"{pass_rate:.0%}" if pass_rate else "N/A")
 
     with col3:
-        conf = metrics['avg_confidence']
-        st.metric("Avg Confidence", f"{conf:.1f}/3" if conf else "N/A")
+        gate = metrics['gate_summary']
+        st.metric("Gate Results", f"✓{gate['pass']} ⚠{gate['review']} ✗{gate['fail']}")
 
     with col4:
         dur = metrics['avg_duration']
         st.metric("Avg Duration", f"{dur:.1f} min" if dur else "N/A")
 
+    # Choice breakdown
+    st.markdown("---")
+    st.subheader("📊 Choice Distribution")
+
+    choice_totals = metrics['choice_totals']
+    total_choices = sum(choice_totals.values())
+
+    if total_choices > 0:
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            pct = choice_totals['chose_a'] / total_choices * 100
+            st.metric("Response A", f"{choice_totals['chose_a']} ({pct:.0f}%)")
+        with col2:
+            pct = choice_totals['chose_b'] / total_choices * 100
+            st.metric("Response B", f"{choice_totals['chose_b']} ({pct:.0f}%)")
+        with col3:
+            pct = choice_totals['both_fine'] / total_choices * 100
+            st.metric("Can't Tell", f"{choice_totals['both_fine']} ({pct:.0f}%)")
+        with col4:
+            pct = choice_totals['both_wrong'] / total_choices * 100
+            st.metric("Both Wrong", f"{choice_totals['both_wrong']} ({pct:.0f}%)")
+
     st.markdown("---")
 
     # Individual results
-    st.subheader("📊 Individual Responses")
+    st.subheader("📋 Individual Responses")
 
     for i, result in enumerate(results):
         rater = result.get('rater', {})
         summary = result.get('summary', {})
 
-        with st.expander(f"**{rater.get('username', f'Rater {i+1}')}** - PFI: {summary.get('pfi_human', 'N/A'):.2f}"):
+        # Get gate status for display
+        gate_status = summary.get('gate_status', 'N/A')
+        gate_icon = "✓" if gate_status == "PASS" else ("⚠" if gate_status == "REVIEW" else "✗")
+
+        with st.expander(f"**{rater.get('username', f'Rater {i+1}')}** - {gate_icon} {gate_status}"):
             col1, col2 = st.columns(2)
 
             with col1:
+                duration = result.get('duration_minutes', 0)
                 st.markdown(f"""
                 **Rater Info:**
                 - Username: {rater.get('username', 'Unknown')}
                 - Favorite Movie: {rater.get('favorite_movie', 'Not selected')}
-                - Duration: {result.get('duration_minutes', 'N/A'):.1f} min
+                - Duration: {duration:.1f} min
                 """)
 
             with col2:
                 st.markdown(f"""
-                **Summary:**
-                - PFI Score: {summary.get('pfi_human', 'N/A'):.2f}
-                - Chose A: {summary.get('chose_a_count', 0)}x
-                - Chose B: {summary.get('chose_b_count', 0)}x
-                - Hard to tell: {summary.get('hard_to_tell_count', 0)}x
+                **Summary (v2.0):**
+                - Gate Status: **{gate_status}**
+                - Pass Rate: {summary.get('pass_rate', 0):.0%}
+                - Response A: {summary.get('chose_a', 0)}x
+                - Response B: {summary.get('chose_b', 0)}x
+                - Can't Tell: {summary.get('both_fine', 0)}x
+                - Both Wrong: {summary.get('both_wrong', 0)}x
                 """)
 
             # Show individual responses
             st.markdown("**Responses:**")
             for resp in result.get('responses', []):
-                st.markdown(f"- Scenario {resp.get('scenario_id')}: {resp.get('voice_choice')} ({resp.get('confidence')})")
+                choice = resp.get('choice', resp.get('voice_choice', 'N/A'))
+                comments = resp.get('comments', '')
+                comment_text = f" - *{comments}*" if comments else ""
+                st.markdown(f"- Scenario {resp.get('scenario_id')}: {choice}{comment_text}")
 
     st.markdown("---")
 

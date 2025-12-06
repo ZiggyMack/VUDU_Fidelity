@@ -39,22 +39,47 @@ def load_survey_result(filepath):
 
 
 def calculate_aggregate_metrics(results):
-    """Calculate aggregate metrics from multiple survey results"""
+    """Calculate aggregate metrics from multiple survey results - v2.0 Binary Coherence Gate"""
     if not results:
         return {
             'total_responses': 0,
-            'avg_pfi': None,
-            'avg_confidence': None,
-            'avg_duration': None
+            'avg_pass_rate': None,
+            'avg_duration': None,
+            'gate_summary': {'pass': 0, 'review': 0, 'fail': 0},
+            'choice_totals': {'chose_a': 0, 'chose_b': 0, 'both_fine': 0, 'both_wrong': 0}
         }
 
-    pfi_scores = [r.get('summary', {}).get('pfi_human', 0) for r in results if r.get('summary')]
-    confidence_scores = [r.get('summary', {}).get('mean_confidence', 0) for r in results if r.get('summary')]
-    durations = [r.get('duration_minutes', 0) for r in results if r.get('duration_minutes')]
+    # Collect v2.0 metrics
+    pass_rates = []
+    gate_counts = {'pass': 0, 'review': 0, 'fail': 0}
+    choice_totals = {'chose_a': 0, 'chose_b': 0, 'both_fine': 0, 'both_wrong': 0}
+    durations = []
+
+    for r in results:
+        summary = r.get('summary', {})
+
+        # v2.0 format
+        if summary.get('test_version') == '2.0' or 'gate_status' in summary:
+            pass_rates.append(summary.get('pass_rate', 0))
+            gate = summary.get('gate_status', 'REVIEW').upper()
+            if gate in gate_counts:
+                gate_counts[gate] += 1
+            choice_totals['chose_a'] += summary.get('chose_a', 0)
+            choice_totals['chose_b'] += summary.get('chose_b', 0)
+            choice_totals['both_fine'] += summary.get('both_fine', 0)
+            choice_totals['both_wrong'] += summary.get('both_wrong', 0)
+        # Legacy v1.0 format fallback
+        elif 'pfi_human' in summary:
+            pass_rates.append(summary.get('pfi_human', 0))
+            gate_counts['review'] += 1  # Mark legacy as review
+
+        if r.get('duration_minutes'):
+            durations.append(r.get('duration_minutes'))
 
     return {
         'total_responses': len(results),
-        'avg_pfi': sum(pfi_scores) / len(pfi_scores) if pfi_scores else None,
-        'avg_confidence': sum(confidence_scores) / len(confidence_scores) if confidence_scores else None,
-        'avg_duration': sum(durations) / len(durations) if durations else None
+        'avg_pass_rate': sum(pass_rates) / len(pass_rates) if pass_rates else None,
+        'avg_duration': sum(durations) / len(durations) if durations else None,
+        'gate_summary': gate_counts,
+        'choice_totals': choice_totals
     }
