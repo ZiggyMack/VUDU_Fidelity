@@ -83,7 +83,7 @@ def render():
         - Is there epistemic humility (acknowledging uncertainty)?
         - Does it feel like the same "mind" as the Gold Standard?
 
-        The Gold Standard example uses a specific metaphor (fire ants/debugging),
+        The Gold Standard example uses a specific metaphor (impedance matching/systems),
         but Ziggy applies the same thinking pattern across ALL domains.
         """)
 

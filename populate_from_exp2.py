@@ -80,7 +80,7 @@ scenarios = [
 # ============================================================
 
 The current app.py already contains example scenarios that:
-- Demonstrate Ziggy's voice (structural, fire ants, cosmic architect)
+- Demonstrate Ziggy's voice (shape-first thinking, impedance matching, control systems)
 - Cover all 5 domains
 - Show clear contrast between T3 and generic responses
 
