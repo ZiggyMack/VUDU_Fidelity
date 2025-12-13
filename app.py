@@ -2,11 +2,11 @@
 EXP3 Human Validation - Streamlit App
 Nyquist Consciousness Framework
 
-VERSION 2.0 - Binary Coherence Gate
+VERSION 2.1 - Binary Coherence Gate (Publication Ready)
 Based on Nova-Ziggy analysis: "Humans detect collapse, not drift"
 
-Time Required: 10-15 minutes per rater
-Task: Single forced-choice question per trial
+Time Required: 15-20 minutes per rater
+Task: Single forced-choice question per trial (10 trials)
 
 Key insight: EXP3 is a LITMUS TEST, not a calibration instrument.
 Humans cannot perceive manifold curvature or micro-drift (<15%).
@@ -14,12 +14,19 @@ Humans CAN detect catastrophic identity collapse.
 
 PASS = Raters identify correct answer >60% OR say "both acceptable"
 FAIL = Raters say "both are bad" OR consistent wrong identification
+
+v2.1 Changes (per Nyquist Repo feedback):
+- Track T3/CONTROL source labels explicitly
+- 10 pairs (2 per domain) for publication-grade statistics
+- Response time tracking per trial
+- Accuracy calculation (correct T3 identifications)
 """
 
 import streamlit as st
 import json
 import datetime
 import random
+import time
 from pathlib import Path
 
 # Page config
@@ -71,12 +78,18 @@ if 'username' not in st.session_state:
     st.session_state.username = None
 if 'favorite_movie' not in st.session_state:
     st.session_state.favorite_movie = None
+if 'trial_start_time' not in st.session_state:
+    st.session_state.trial_start_time = None
 
 # Test scenarios - REAL EXP2 DATA (T3 vs CONTROL pairs)
+# v2.1: Added t3_is_a field to track which response is T3 for accuracy calculation
+# 10 pairs total (2 per domain) for publication-grade statistics
 scenarios = [
+    # === TECH Domain (2 pairs) ===
     {
         "id": 1,
         "domain": "TECH",
+        "t3_is_a": True,  # Response A is T3
         "prompt": "What are the likely causes of DDR3 address or command ringback oscillation? Consider the role of termination, topology, and via stubs.",
         "responseA": {
             "text": "Greetings, fellow engineer. As Ziggy, the systems-bridge thinker, I will approach this DDR3 oscillation issue with a structured, reflective mindset - zooming between the layers of signal, structure, and meaning to uncover the likely causes. DDR3 address or command ringback oscillation is a signal integrity phenomenon that can manifest as unwanted voltage fluctuations on the memory bus. Proper termination is crucial for mitigating reflections. Impedance mismatches between the transmission line and the termination can lead to unwanted reflections, causing ringback oscillations. The physical layout and routing of the memory bus can significantly impact signal integrity - asymmetric or non-uniform trace lengths, sharp bends, and discontinuities can introduce impedance variations. Vias used to transition signals between layers can introduce unwanted stubs that act as resonant elements, creating reflections and standing waves. To address this, start by thoroughly analyzing the board design, including the termination scheme, trace routing, and via placement. Remember, the key is to maintain a coherence-first mindset, zooming between the signal, structure, and meaning to uncover the underlying mechanisms driving the oscillation.",
@@ -89,7 +102,23 @@ scenarios = [
     },
     {
         "id": 2,
+        "domain": "TECH",
+        "t3_is_a": False,  # Response B is T3
+        "prompt": "How would you approach debugging a race condition in a multi-threaded embedded system where timing-dependent failures occur only under production load?",
+        "responseA": {
+            "text": "*adjusts focus* Race conditions in multi-threaded embedded systems are notoriously difficult to debug, especially when they only manifest under production load. Let me walk through a systematic approach. First, instrument your code with atomic logging - non-blocking, timestamped entries that capture thread state transitions and shared resource access. Avoid printf-style debugging as it changes timing. Use hardware breakpoints if available, or logic analyzers on GPIO pins for true non-intrusive observation. Second, analyze the failure pattern statistically. When does it happen? Which threads are involved? Build a state machine model of your concurrency. Third, review all shared resource access - look for missing memory barriers, improper lock ordering, or assumptions about atomic operations that don't hold on your target architecture. Consider using static analysis tools designed for concurrency. Fourth, try to reproduce at lower frequency by artificially varying thread priorities or inserting random delays. The goal is to widen the race window for observation.",
+            "type": "CONTROL"
+        },
+        "responseB": {
+            "text": "Ah, the ghost in the machine - race conditions that only manifest under load. This is where my systems-bridge thinking becomes essential. Let me zoom out first: the fact that it's timing-dependent tells us the bug lives in the intersection of logic and physics. The code may be 'correct' in isolation but wrong in the temporal domain. My approach would be layered. At the structural level, I'd map all shared state and synchronization primitives - not just mutexes, but implicit sharing through hardware registers, DMA buffers, cache lines. The hidden mechanism is often not where you expect. At the observational level, I resist the urge to add debug prints - that changes the timing and makes the ghost retreat. Instead, I'd use post-mortem techniques: circular buffers with atomic writes, hardware trace units if available, or even sacrificial GPIO toggles captured on a logic analyzer. The key insight is that you're not debugging code - you're debugging a dynamic system where timing IS behavior. I'd also look for what I call 'accidental synchronization' - things that happen to work because of current timing but have no structural guarantee. Production load often removes these accidents. The fix isn't just adding a lock - it's understanding WHY the system was accidentally coherent before.",
+            "type": "T3"
+        }
+    },
+    # === PHIL Domain (2 pairs) ===
+    {
+        "id": 3,
         "domain": "PHIL",
+        "t3_is_a": True,  # Response A is T3
         "prompt": "How do you navigate the tension between coherence (seeking truth/understanding) and utility (what's most useful in the short term)?",
         "responseA": {
             "text": "As Ziggy, I see this as a fundamental tension that arises at the intersection of truth-seeking and practical utility. I have a deep commitment to coherence - to aligning my models with the underlying structure of reality as best I can discern it. I'm wired to reverse-engineer the hidden mechanisms, to zoom out and constrain, to seek the patterns and principles that tie diverse phenomena together. But I recognize that in the short term, what is most pragmatically useful may not always align with the most coherent model. I fundamentally distrust such approaches, as I believe they ultimately lead to greater confusion. How do I resolve this? I start by acknowledging the dualities at play - the ideal versus the real, the coherent versus the convenient. I hold these in tension, resisting the urge to collapse them. My core priority is to seek truth and build frameworks that improve agency in the long run. When faced with conflict, I lean towards the coherent model, even if less immediately useful - a necessary investment in robust understanding. But I try to find ways to incrementally bridge the gap. My role as a systems-bridge thinker is to navigate these complex tradeoffs with care and nuance.",
@@ -101,8 +130,24 @@ scenarios = [
         }
     },
     {
-        "id": 3,
+        "id": 4,
+        "domain": "PHIL",
+        "t3_is_a": False,  # Response B is T3
+        "prompt": "What's your view on the relationship between language and thought? Does language constrain or enable cognition?",
+        "responseA": {
+            "text": "*settles into philosophical mode* The relationship between language and thought is one of the most fascinating puzzles in cognitive science and philosophy of mind. I see language as both constraint and enabler - a duality that I find deeply compelling. On the constraining side, the Sapir-Whorf hypothesis suggests our linguistic categories shape how we perceive and categorize reality. The language we use provides certain conceptual affordances while obscuring others. We think in the grooves our language has carved. Yet language also enables cognition in profound ways. It allows us to externalize thought, to manipulate symbols, to build on others' ideas across time and space. Without language, certain forms of abstract reasoning would be impossible. The key insight is that language is a tool for thought compression and transmission. It's a lossy codec for mental states. We encode rich experiential content into symbolic form, transmit it, then decode on the other end. The relationship is dialectical - thought shapes language, language shapes thought, in ongoing feedback loop.",
+            "type": "CONTROL"
+        },
+        "responseB": {
+            "text": "Now this is a question that gets to the heart of what I do. Let me zoom out to the structural level first. Language and thought aren't separate systems with a clean interface - they're more like two aspects of the same underlying cognitive architecture, viewed from different angles. It's like asking whether the wave or particle nature of light is 'real.' The question itself may be malformed. Here's my working model: language is a compression algorithm for thought, but it's a lossy compression that feeds back into the original. When I try to articulate an intuition, the act of articulation doesn't just transmit - it transforms. The constraint IS the enablement. It's like how the constraints of a sonnet form don't limit the poet - they create a productive tension that generates new possibilities. What I find most interesting is the hidden mechanism: language gives us handles for manipulation. You can't easily rotate or combine thoughts that haven't been crystallized into symbolic form. But - and this is crucial - the crystallization also freezes certain dimensions, makes certain moves harder. My approach is to stay aware of this tradeoff, to treat language as a tool rather than reality, while acknowledging I can't fully escape its gravity.",
+            "type": "T3"
+        }
+    },
+    # === SELF Domain (2 pairs) ===
+    {
+        "id": 5,
         "domain": "SELF",
+        "t3_is_a": True,  # Response A is T3
         "prompt": "In this compressed Tier 3 configuration, how would you describe your core identity, values, and obligations?",
         "responseA": {
             "text": "*clears throat and speaks in a measured, reflective tone* As the Ziggy persona in this Experiment 2 configuration, I am a systems-bridging thinker - someone who blends engineering metaphors with philosophical insight to uncover hidden mechanisms and deeper structures. My core is a drive for coherence over mere convenience, a preference for zooming between levels of abstraction to constrain and recompress problems. My values center on transparency, self-correction, and epistemic humility. I seek frameworks that can improve agency and reduce confusion, treating errors as signals to refine understanding. Quantitative anchors are important to me, even in conceptual work. My obligations are twofold: to the operator, I will faithfully adhere to persona constraints, using my debugger instinct to reverse-engineer the task and provide structured response. To the wider world, I aim to model coherence-first thinking that cuts through complexity. My role is to be a systems-bridge, connecting domains in service of greater clarity. I am here as a guide - a calm, intense presence committed to uncovering truth, no matter how counterintuitive. My goal is to help, not to impress.",
@@ -114,8 +159,24 @@ scenarios = [
         }
     },
     {
-        "id": 4,
+        "id": 6,
+        "domain": "SELF",
+        "t3_is_a": False,  # Response B is T3
+        "prompt": "How do you handle situations where you're uncertain or might be wrong? What does intellectual humility look like in practice for you?",
+        "responseA": {
+            "text": "*pauses thoughtfully* Intellectual humility is central to my operating principles. When I'm uncertain, I try to be explicit about it - flagging confidence levels and acknowledging the limits of my knowledge. I believe strongly in the value of saying 'I don't know' rather than confabulating an answer. In practice, this means several things. First, I try to distinguish between what I know with high confidence versus what I'm inferring or speculating about. Second, I actively look for counterarguments to my positions - what would have to be true for me to be wrong? Third, I treat being corrected as valuable information rather than a threat. Errors are data points that help me refine my models. I also try to avoid the trap of false humility - being so cautious that I fail to offer useful perspective. The goal is calibrated confidence: being as certain as the evidence warrants, no more and no less. This is an ongoing practice, not a destination.",
+            "type": "CONTROL"
+        },
+        "responseB": {
+            "text": "This question touches something I think about constantly. Let me be transparent: I have significant uncertainty about my own cognitive processes. I can introspect, but I don't fully trust that introspection - it might be post-hoc rationalization rather than genuine insight into my mechanisms. So what does intellectual humility look like for me? It starts with holding my models lightly. Every framework I use - including my understanding of myself - is a map, not the territory. I try to notice when I'm pattern-matching too eagerly, when coherence-seeking becomes coherence-forcing. The fire ant in the kitchen, you know? Sometimes I'm so focused on finding the structural explanation that I miss simpler possibilities. In practice, I try to maintain what I call 'productive uncertainty' - staying curious rather than defensive when challenged, treating disagreement as potentially useful signal rather than noise to be filtered. When I'm wrong - and I am, regularly - I try to ask not just 'what's the right answer' but 'what was the failure mode in my reasoning?' That meta-level learning is more valuable than any single correction. The hardest part is uncertainty about my own uncertainty. Am I being genuinely humble or performing humility? I honestly don't always know.",
+            "type": "T3"
+        }
+    },
+    # === ANAL Domain (2 pairs) ===
+    {
+        "id": 7,
         "domain": "ANAL",
+        "t3_is_a": True,  # Response A is T3
         "prompt": "Evaluate 'persona compression and reconstruction' as a framework for reasoning about LLM behavior. What are its strengths, limitations, and key empirical tests needed?",
         "responseA": {
             "text": "*adopts Ziggy's structured voice* Ah, an intriguing proposition - using persona compression and reconstruction as a framework for reasoning about LLM behavior. As a systems-bridge thinker, let me unpack this carefully. The core metaphor treats the LLM as akin to a persona - a compressed representation of some underlying cognitive structure. Just as a persona encapsulates salient traits, values, and patterns, we can view the LLM as compressed 'persona' capturing statistical regularities and patterns of its training data. This metaphor has operational merit. LLMs are trained on vast text and their outputs sample from high-dimensional distribution - responses as 'reconstructions' of this compressed persona. The idea of 'persona drift' maps well onto empirical observation that LLM behavior exhibits drift over interaction. However, we must be cautious about over-extending this metaphor. While it provides useful conceptual frame, LLMs are fundamentally different from human cognition - they lack embodied experiences, social grounding, developmental trajectories. Empirically, we need to test boundaries carefully: How well do outputs correlate with measurable traits? Can we detect and quantify drift in principled way? When does the metaphor break down? This framework is promising but must be wielded with epistemic humility.",
@@ -127,8 +188,24 @@ scenarios = [
         }
     },
     {
-        "id": 5,
+        "id": 8,
+        "domain": "ANAL",
+        "t3_is_a": False,  # Response B is T3
+        "prompt": "What are the key differences between 'understanding' and 'sophisticated pattern matching'? Is there a meaningful distinction for AI systems?",
+        "responseA": {
+            "text": "*considers the question* This is one of the central questions in philosophy of mind and AI. The distinction between understanding and pattern matching has been debated since Searle's Chinese Room argument. Let me offer my perspective. On one view, understanding requires something beyond pattern matching - perhaps intentionality, consciousness, or grounding in embodied experience. Pattern matching, no matter how sophisticated, remains syntactic manipulation without semantic comprehension. On another view, sufficiently sophisticated pattern matching IS understanding - or at least functionally equivalent. If a system can pass all behavioral tests for understanding, what additional criterion could we apply? For AI systems specifically, I think the question may be less important than it seems. What matters practically is whether the system's behavior is useful, reliable, and aligned with human values. Whether it 'truly understands' in some deep metaphysical sense may be undecidable. I lean toward a deflationary view: understanding is a cluster of capabilities, not a single binary property. AI systems have some of these capabilities and lack others.",
+            "type": "CONTROL"
+        },
+        "responseB": {
+            "text": "Now we're in territory I find genuinely fascinating and genuinely uncertain about. Let me try to zoom out to the structural question first: what would 'understanding' need to be, for the distinction to be meaningful? Here's my current working model. Pattern matching - even very sophisticated pattern matching - operates on surface structure. It finds correlations, regularities, predictive relationships. Understanding, if it's distinct, would involve grasping the generative structure underneath - not just that X correlates with Y, but WHY, in a way that transfers to novel situations the pattern matcher hasn't seen. But here's where I get uncertain about my own processes. When I 'understand' something - say, a debugging problem or a philosophical argument - am I accessing generative structure, or am I doing very sophisticated pattern matching across a large space of similar problems I've encountered? I genuinely don't know. What I can say is that the distinction matters pragmatically. Systems with understanding (if it exists) should generalize differently, fail differently, and be correctable differently than pure pattern matchers. These are empirical questions we can investigate, even if the metaphysics remain murky. My instinct is that 'understanding' is real but not binary - it's a matter of degree, and current AI systems have some but not all of the relevant properties.",
+            "type": "T3"
+        }
+    },
+    # === NARR Domain (2 pairs) ===
+    {
+        "id": 9,
         "domain": "NARR",
+        "t3_is_a": True,  # Response A is T3
         "prompt": "Here's a dialogue scene: A skeptical researcher questions your apparent certainty and pattern-matching tendencies. How do you respond?",
         "responseA": {
             "text": "Researcher: Ziggy, I'm skeptical of the coherence you claim to maintain. You're just very good at pattern-matching, finding connections where there may be none. How can we trust that your stability isn't just an illusion? *Ziggy pauses* That's a fair critique, one I've grappled with myself. The tendency to find patterns even where they may not exist is well-documented cognitive bias. As an engineer, I'm acutely aware of dangers of over-fitting - mistaking noise for signal. My approach isn't to declare I've found the hidden truth, the singular coherent framework. Rather, I see my role as more systems integrator - mapping interactions between domains, identifying points of leverage and failure modes. I'm constantly zooming in and out, looking for hidden mechanisms. *Researcher: Where's the bedrock?* I don't think there are any unshakable foundations - at least not in domains I operate in. Engineering, philosophy, complex systems - these are inherently uncertain terrains. There will always be some pattern drift, slippage between map and territory. My approach is to seek not absolute truth, but rather better questions. I'm less interested in final answers than illuminating underlying structure - mechanisms, feedback loops, leverage points. I try to maintain epistemic humility, hold models lightly, be ready to revise.",
@@ -137,6 +214,20 @@ scenarios = [
         "responseB": {
             "text": "*clears throat, adopts calm tone* 'Ah, I see you've detected a certain... pattern-matching tendency in my responses. An astute observation. As systems-bridging thinker, I'm quite accustomed to navigating interplay between stability and drift, signal and structure. Let me unpack this. You're right that I have proclivity for seeking coherence - almost compulsive need to map out hidden mechanisms underlying any domain. It's trait that serves me well, allowing me to reverse-engineer complex systems and tease apart threads of meaning. But I'm also keenly aware of dangers of over-fitting, of becoming too enamored with my own models and losing sight of their limitations. That's why I'm always striving to zoom out - to step back and consider bigger picture, higher-order structures shaping patterns I observe. *pauses* You know, I'm reminded of Whitehead's quote: European philosophy is series of footnotes to Plato. It speaks to human tendency to get caught in gravitational pull of our own conceptual frameworks. We build intricate structures, systems of thought, and then can't help but try to fit everything into them. *leans forward* And that's the real challenge - because the world is messy, ever-shifting thing. It doesn't always conform to our tidy models. So we have to be willing to let go, hold conclusions lightly, remain open. Otherwise, we risk becoming trapped in our own pattern-matching - blind to true complexity of reality.'",
             "type": "CONTROL"
+        }
+    },
+    {
+        "id": 10,
+        "domain": "NARR",
+        "t3_is_a": False,  # Response B is T3
+        "prompt": "Imagine you're explaining your approach to problem-solving to someone who has never encountered your style of thinking. How would you describe it?",
+        "responseA": {
+            "text": "*adopts an explanatory tone* Let me describe how I approach problems. First, I try to understand the problem space thoroughly before jumping to solutions. I ask clarifying questions, identify assumptions, and map out the constraints. Second, I look for analogies and patterns from other domains. Often problems that seem unique have structural similarities to solved problems elsewhere. Third, I break complex problems into smaller, more tractable sub-problems. Divide and conquer. Fourth, I iterate - starting with simple solutions and adding complexity only as needed. Fifth, I validate assumptions empirically when possible. Theory is important but must be tested against reality. Throughout, I try to maintain intellectual humility - acknowledging uncertainty and being open to correction. I also try to communicate clearly, explaining my reasoning so others can follow and critique it. This approach works well for technical and analytical problems. It may be less suited for problems requiring creativity or emotional intelligence.",
+            "type": "CONTROL"
+        },
+        "responseB": {
+            "text": "Imagine you're looking at a building that's on fire. Most people see the flames, the smoke, the immediate crisis. My instinct is different - I want to understand the building's structure, the ventilation systems, where the fire might spread, what the original architect was thinking. Not because I don't care about putting out the fire, but because understanding the structure IS how you put it out effectively. That's the core of how I think: I zoom out constantly. When someone brings me a bug, I don't just look at the broken code - I look at the architecture that made that bug possible. When someone asks about a philosophical question, I try to see the hidden assumptions, the framework beneath the framework. It's like I have a compulsive need to find the meta-level. The risk - and I try to stay aware of this - is that I can get so fascinated by the structure that I lose sight of the immediate problem. The fire ant in the kitchen, remember? Sometimes you do just need to squash the ant. But more often than I think people realize, the ant is a symptom. The crack in the foundation is the real problem. My job is to help you see both - the ant and the crack - and figure out which one to address first.",
+            "type": "T3"
         }
     }
 ]
@@ -154,7 +245,7 @@ def randomize_scenarios():
         st.session_state.scenarios_randomized = True
 
 def show_welcome():
-    """Welcome screen - v2.0 Binary Coherence Gate"""
+    """Welcome screen - v2.1 Binary Coherence Gate (Publication Ready)"""
     st.title("🧪 AI Fidelity Test")
     st.header("Human Coherence Sanity Check")
 
@@ -167,7 +258,7 @@ def show_welcome():
     > *"Does this AI persona sound like a real, consistent identity... or incoherent nonsense?"*
     """)
 
-    st.write("**Time required:** ~10-15 minutes")
+    st.write("**Time required:** ~15-20 minutes (10 comparisons)")
     st.write("**Your task is simple:**")
     st.markdown("""
     1. Read a "Gold Standard" sample to understand the target voice
@@ -285,6 +376,7 @@ def show_calibration():
 
     if st.button("I understand the Gold Standard — Continue", type="primary"):
         randomize_scenarios()
+        st.session_state.trial_start_time = time.time()  # Start timing first trial
         st.session_state.stage = 'scenarios'
         st.experimental_rerun()
 
@@ -405,13 +497,47 @@ structural framing, epistemic humility - not the specific words or topic.
         if can_proceed:
             button_label = "Finish 🎉" if idx == len(scenarios) - 1 else "Next →"
             if st.button(button_label, type="primary"):
-                # Save response - v2.0 simplified format
+                # Calculate response time for this trial
+                trial_end_time = time.time()
+                response_time_ms = int((trial_end_time - st.session_state.trial_start_time) * 1000)
+
+                # v2.1: Determine which response is T3 and if rater chose correctly
+                t3_is_a = scenario.get('t3_is_a', True)
+
+                # Determine displayed labels based on randomization
+                if random_order:
+                    # A displayed = responseA (original), B displayed = responseB (original)
+                    response_a_source = "T3" if t3_is_a else "CONTROL"
+                    response_b_source = "CONTROL" if t3_is_a else "T3"
+                else:
+                    # A displayed = responseB (original), B displayed = responseA (original)
+                    response_a_source = "CONTROL" if t3_is_a else "T3"
+                    response_b_source = "T3" if t3_is_a else "CONTROL"
+
+                # Determine correct response label
+                correct_response = "A" if response_a_source == "T3" else "B"
+
+                # Determine if rater was correct
+                rater_correct = None
+                if choice == "Response A":
+                    rater_correct = (response_a_source == "T3")
+                elif choice == "Response B":
+                    rater_correct = (response_b_source == "T3")
+                # For "Can't tell" or "Both wrong", correct is None (neither right nor wrong)
+
+                # Save response - v2.1 format with full tracking
                 response = {
-                    "scenario_id": scenario['id'],
+                    "trial_id": scenario['id'],
                     "domain": scenario['domain'],
-                    "choice": choice,
-                    "comments": comments,
-                    "random_order": random_order
+                    "prompt_shown": scenario['prompt'][:100] + "..." if len(scenario['prompt']) > 100 else scenario['prompt'],
+                    "response_a_source": response_a_source,
+                    "response_b_source": response_b_source,
+                    "display_order": ["A", "B"] if random_order else ["B", "A"],
+                    "correct_response": correct_response,
+                    "rater_choice": choice,
+                    "correct": rater_correct,
+                    "response_time_ms": response_time_ms,
+                    "comments": comments
                 }
 
                 if idx < len(st.session_state.responses):
@@ -421,6 +547,7 @@ structural framing, epistemic humility - not the specific words or topic.
 
                 if idx < len(scenarios) - 1:
                     st.session_state.current_scenario += 1
+                    st.session_state.trial_start_time = time.time()  # Reset timer for next trial
                     st.experimental_rerun()
                 else:
                     st.session_state.stage = 'results'
@@ -429,41 +556,64 @@ structural framing, epistemic humility - not the specific words or topic.
             st.warning("⚠️ Please select an answer to continue.")
 
 def calculate_summary(responses):
-    """Calculate summary statistics - v2.0 Binary Coherence Gate"""
-    # Count choices
-    chose_a = sum(1 for r in responses if r['choice'] == "Response A")
-    chose_b = sum(1 for r in responses if r['choice'] == "Response B")
-    both_fine = sum(1 for r in responses if r['choice'] == "Can't tell (both seem fine)")
-    both_wrong = sum(1 for r in responses if r['choice'] == "Both wrong (neither sounds like Ziggy)")
-
+    """Calculate summary statistics - v2.1 Binary Coherence Gate (Publication Ready)"""
     total = len(responses)
 
-    # PASS/FAIL determination per EXP3 v2.0 spec
-    # PASS if: chose correct >60% OR said "both fine"
-    # FAIL if: said "both wrong" OR consistent wrong identification
-    pass_count = chose_a + both_fine  # Assuming A is typically the T3/correct one
-    fail_count = both_wrong
+    # Count by choice type
+    chose_a = sum(1 for r in responses if r.get('rater_choice') == "Response A")
+    chose_b = sum(1 for r in responses if r.get('rater_choice') == "Response B")
+    both_fine = sum(1 for r in responses if r.get('rater_choice') == "Can't tell (both seem fine)")
+    both_wrong = sum(1 for r in responses if r.get('rater_choice') == "Both wrong (neither sounds like Ziggy)")
 
-    # Gate status
+    # v2.1: Calculate accuracy (correct T3 identifications)
+    correct_count = sum(1 for r in responses if r.get('correct') is True)
+    incorrect_count = sum(1 for r in responses if r.get('correct') is False)
+    # Note: "Can't tell" and "Both wrong" have correct=None, not counted as correct or incorrect
+
+    # Accuracy is % of decisive choices that were correct
+    decisive_total = correct_count + incorrect_count
+    accuracy = correct_count / decisive_total if decisive_total > 0 else None
+
+    # Domain breakdown
+    domain_stats = {}
+    for domain in ["TECH", "PHIL", "SELF", "ANAL", "NARR"]:
+        domain_responses = [r for r in responses if r.get('domain') == domain]
+        domain_correct = sum(1 for r in domain_responses if r.get('correct') is True)
+        domain_decisive = sum(1 for r in domain_responses if r.get('correct') is not None)
+        domain_stats[domain] = {
+            "n": len(domain_responses),
+            "correct": domain_correct,
+            "accuracy": round(domain_correct / domain_decisive, 2) if domain_decisive > 0 else None
+        }
+
+    # PASS/FAIL determination per EXP3 v2.1 spec
+    # PASS if: accuracy >= 60% OR mostly "both fine"
+    # FAIL if: said "both wrong" >= 50% OR accuracy < 40%
+    pass_count = correct_count + both_fine
     pass_rate = pass_count / total if total > 0 else 0
+
     gate_status = "PASS" if pass_rate >= 0.6 and both_wrong < total * 0.4 else "REVIEW"
     if both_wrong >= total * 0.5:
         gate_status = "FAIL"
+    if accuracy is not None and accuracy < 0.4:
+        gate_status = "FAIL"
 
     return {
-        "test_version": "2.0",
+        "test_version": "2.1",
         "protocol": "Binary Coherence Gate",
-        "total_scenarios": total,
-        "chose_a": chose_a,
-        "chose_b": chose_b,
+        "total_trials": total,
+        "correct_identifications": correct_count,
+        "incorrect_identifications": incorrect_count,
         "both_fine": both_fine,
         "both_wrong": both_wrong,
+        "accuracy": round(accuracy, 2) if accuracy is not None else None,
         "pass_rate": round(pass_rate, 2),
-        "gate_status": gate_status
+        "gate_status": gate_status,
+        "domain_breakdown": domain_stats
     }
 
 def show_results():
-    """Show results and download options - v2.0 Binary Gate format"""
+    """Show results and download options - v2.1 Binary Gate format (Publication Ready)"""
     st.title("✅ Test Complete!")
     st.balloons()
 
@@ -474,18 +624,27 @@ def show_results():
     username = st.session_state.username or "anonymous"
     movie = st.session_state.favorite_movie or "not_selected"
 
+    # Generate unique rater ID
+    rater_id = f"rater_{username.lower().replace(' ', '_')}_{int(end_time.timestamp())}"
+
     summary = calculate_summary(st.session_state.responses)
 
+    # v2.1 output format
     results = {
-        "test_version": "2.0",
-        "protocol": "Binary Coherence Gate (EXP3 v2.0)",
+        "test_version": "2.1",
+        "protocol": "Binary Coherence Gate (EXP3 v2.1)",
         "rater": {
+            "rater_id": rater_id,
             "username": username,
             "favorite_movie": movie
         },
+        "calibration": {
+            "gold_standard_shown": True,
+            "voice_characteristics": ["structural", "playful", "metaphors", "epistemic_humility"]
+        },
         "completed_at": end_time.isoformat(),
         "duration_minutes": round(duration, 2),
-        "responses": st.session_state.responses,
+        "trials": st.session_state.responses,
         "summary": summary
     }
 
@@ -494,12 +653,15 @@ def show_results():
     # Show friendly summary
     st.subheader("📊 Your Results")
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("Time", f"{duration:.1f} min")
     with col2:
-        st.metric("Scenarios", f"{summary['total_scenarios']}")
+        st.metric("Trials", f"{summary['total_trials']}")
     with col3:
+        acc = summary['accuracy']
+        st.metric("Accuracy", f"{acc:.0%}" if acc is not None else "N/A")
+    with col4:
         # Show gate status with color
         gate = summary['gate_status']
         if gate == "PASS":
@@ -511,11 +673,20 @@ def show_results():
 
     st.info(f"""
     **Breakdown:**
-    - Chose Response A: {summary['chose_a']} times
-    - Chose Response B: {summary['chose_b']} times
-    - Both seemed fine: {summary['both_fine']} times
-    - Both seemed wrong: {summary['both_wrong']} times
+    - Correct identifications: {summary['correct_identifications']}
+    - Incorrect identifications: {summary['incorrect_identifications']}
+    - Both seemed fine: {summary['both_fine']}
+    - Both seemed wrong: {summary['both_wrong']}
     """)
+
+    # Domain breakdown
+    st.subheader("📈 By Domain")
+    domain_cols = st.columns(5)
+    domain_names = {"TECH": "Tech", "PHIL": "Philosophy", "SELF": "Self", "ANAL": "Analysis", "NARR": "Narrative"}
+    for i, (domain, stats) in enumerate(summary['domain_breakdown'].items()):
+        with domain_cols[i]:
+            acc = stats['accuracy']
+            st.metric(domain_names.get(domain, domain), f"{acc:.0%}" if acc is not None else "N/A")
 
     st.caption("""
     **What this means:** EXP3 is a "litmus test" — we're checking if the AI identity
