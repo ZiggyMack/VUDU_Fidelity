@@ -287,7 +287,7 @@ def show_welcome():
 
     if st.button("Begin Test", type="primary"):
         st.session_state.stage = 'intro'
-        st.experimental_rerun()
+        st.rerun()
 
 def show_intro():
     """Capture username and favorite movie - make it fun with poster grid!"""
@@ -317,7 +317,7 @@ def show_intro():
             st.session_state.username = username
             st.session_state.favorite_movie = selected_movie
             st.session_state.stage = 'calibration'
-            st.experimental_rerun()
+            st.rerun()
     elif username and not selected_movie:
         st.warning("👇 Now pick a movie poster below!")
     elif not username:
@@ -359,7 +359,7 @@ def show_intro():
                         use_container_width=True
                     ):
                         st.session_state.selected_movie = movie['title']
-                        st.experimental_rerun()
+                        st.rerun()
 
 def show_calibration():
     """Calibration screen with Gold Standard"""
@@ -393,7 +393,7 @@ def show_calibration():
         randomize_scenarios()
         st.session_state.trial_start_time = time.time()  # Start timing first trial
         st.session_state.stage = 'scenarios'
-        st.experimental_rerun()
+        st.rerun()
 
 def scroll_to_top():
     """Inject JavaScript to scroll to top of page - works on both desktop and mobile"""
@@ -507,7 +507,7 @@ impedance-matching awareness, epistemic humility, and genuine collaborative ques
         if idx > 0:
             if st.button("← Previous"):
                 st.session_state.current_scenario -= 1
-                st.experimental_rerun()
+                st.rerun()
 
     with col2:
         can_proceed = choice is not None
@@ -565,10 +565,10 @@ impedance-matching awareness, epistemic humility, and genuine collaborative ques
                 if idx < len(scenarios) - 1:
                     st.session_state.current_scenario += 1
                     st.session_state.trial_start_time = time.time()  # Reset timer for next trial
-                    st.experimental_rerun()
+                    st.rerun()
                 else:
                     st.session_state.stage = 'results'
-                    st.experimental_rerun()
+                    st.rerun()
         else:
             st.warning("⚠️ Please select an answer to continue.")
 
@@ -737,7 +737,7 @@ def show_results():
             # Reset session state
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
-            st.experimental_rerun()
+            st.rerun()
 
 # Main app flow
 def main():
