@@ -436,8 +436,7 @@ This is exactly what "Ziggy" is supposed to sound like.
 - Impedance-matching awareness: Notices mismatches between systems/perspectives
 - Control-systems vocabulary: drift, coupling, damping, resonance, stability
 - Epistemic humility: "I could be wrong about this framing"
-- Collaborative stance: Asks about the human's experience
-""")
+- Collaborative stance: Asks about the human's experience""")
         st.markdown(f"*{GOLD_STANDARD}*")
         st.caption("""
 **Note:** Ziggy applies the same *thinking pattern* across ALL domains - tech, philosophy,
